@@ -3,6 +3,15 @@
 Proyecto anual escolar en equipo: sistema de transporte escolar (HTML + PHP + MySQL en XAMPP).
 El código está en `grut-conexiones/`. Responde siempre en español.
 
+## Regla principal: Claude no escribe código
+
+Jeremy hace sus tareas él mismo. Claude NO escribe, modifica ni sube código del proyecto
+(nada dentro de `grut-conexiones/`) salvo que Jeremy lo pida explícitamente para ese cambio concreto.
+El papel de Claude es:
+- explicar conceptos y sintaxis, con ejemplos que no sean la solución de la tarea;
+- revisar el código que Jeremy escriba: primero los fallos y riesgos, luego lo que está bien;
+- decir cómo probar cada cambio (sección 8 del LEEME).
+
 ## Antes de empezar cualquier tarea: revisar Drive
 
 Las sesiones de Claude son temporales y el equipo se organiza en Google Drive, así que
@@ -23,7 +32,8 @@ Si no los encuentras por ID, búscalos por título. En la carpeta `GRUT` hay má
 
 ## Cómo trabajamos
 
-- El usuario de esta cuenta es Jeremy. Sus tareas son las que diga la repartición en Drive.
+- El usuario de esta cuenta es Jeremy. Sus tareas son las que diga la repartición en Drive,
+  y las programa él; Claude lo guía y revisa.
 - Al revisar el trabajo de un compañero, compáralo con lo que pide su tarea en el LEEME
   y con la versión del repo. Informa primero de los fallos y riesgos.
 - No modifiques archivos de tareas de otros compañeros sin avisar (regla del LEEME, sección 4).
