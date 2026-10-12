@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagos y facturas - GRUT</title>
+    <link rel="stylesheet" href="css/estilos_globales.css">
+</head>
+<body class="page-pagos">
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <img src="imagenes/logotipo-512.png" alt="Logotipo de GRUT">
+            <h1>GRUT</h1>
+        </div>
+        <nav class="navlinks" aria-label="Navegación principal">
+            <ul>
+                <li><a class="btn" href="inicio.html">Inicio</a></li>
+                <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
+                <li><a class="btn" href="soporte.html">Soporte</a></li>
+                <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <li><a class="btn" href="seleccionar_cuenta.html">Cuenta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <main id="contenido" tabindex="-1">
+        <!-- Enlace de regreso -->
+        <a href="inicio_estudiante.php" class="btn-back">&larr; Salir de pagos y facturas</a>
+
+        <!-- Contenedor principal azul -->
+        <section class="payments-card">
+            <h2>Pagos y factura</h2>
+
+            <!-- Contenedor gris interior con la tabla/grid -->
+            <div class="payments-container">
+                <div class="table-container" role="region" aria-label="Tabla de pagos" tabindex="0">
+                <table class="payments-table">
+                    <thead>
+                        <tr>
+                            <th>id_factura</th>
+                            <th>Descripción</th>
+                            <th>Emisión</th>
+                            <th>Vencimiento</th>
+                            <th>Monto</th>
+                            <th>Método de pago</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Fila 1 -->
+                        <tr>
+                            <td><div class="cell-box">1</div></td>
+                            <td><div class="cell-box">Marzo 2026</div></td>
+                            <td><div class="cell-box">1/03/2026</div></td>
+                            <td><div class="cell-box">1/04/2026</div></td>
+                            <td><div class="cell-box">$25.00</div></td>
+                            <td><button class="btn-action-pay">CLICK PARA PAGAR &rarr;</button></td>
+                            <td><div class="badge badge-pending">&nbsp;&nbsp;PENDIENTE</div></td>
+                        </tr>
+                        <!-- Fila 2 -->
+                        <tr>
+                            <td><div class="cell-box">2</div></td>
+                            <td><div class="cell-box">Febrero 2026</div></td>
+                            <td><div class="cell-box">1/02/2026</div></td>
+                            <td><div class="cell-box">1/03/2026</div></td>
+                            <td><div class="cell-box">$25.00</div></td>
+                            <td><div class="cell-box">Transferencia</div></td>
+                            <td><div class="badge badge-paid">&#10003; PAGADO</div></td>
+                        </tr>
+                        <!-- Fila 3 -->
+                        <tr>
+                            <td><div class="cell-box">3</div></td>
+                            <td><div class="cell-box">Enero 2026</div></td>
+                            <td><div class="cell-box">1/01/2026</div></td>
+                            <td><div class="cell-box">1/02/2026</div></td>
+                            <td><div class="cell-box">$25.00</div></td>
+                            <td><div class="badge badge-no-registered">No registrado</div></td>
+                            <td><div class="badge badge-expired">X Vencido</div></td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-info">
+            <span><strong>IG:</strong> @GRUT_updates</span>
+            <span><strong>FB:</strong> @GRUT_updates</span>
+            <span><strong>WAPP:</strong> +503 0000-0000</span>
+            <span><strong>X:</strong> @GRUT_updates</span>
+        </div>
+    </footer>
+
+</body>
+</html>

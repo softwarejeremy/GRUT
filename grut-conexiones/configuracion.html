@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - GRUT</title>
+    <link rel="stylesheet" href="css/estilos_globales.css">
+</head>
+<body class="page-configuracion">
+
+    <header class="navbar">
+        <div class="logo">
+            <img src="imagenes/logotipo-512.png" alt="Logotipo de GRUT">
+            <h1>GRUT</h1>
+        </div>
+        <nav class="navlinks" aria-label="Navegación principal">
+            <ul>
+                <li><a class="btn" href="inicio.html">Inicio</a></li>
+                <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
+                <li><a class="btn" href="soporte.html">Soporte</a></li>
+                <li><a class="btn active" href="configuracion.html" aria-current="page">Configuración</a></li>
+                <li><a class="btn" href="seleccionar_cuenta.html">Cuenta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <main class="config-main" id="contenido" tabindex="-1">
+        <section class="config-card" aria-labelledby="config-title">
+            <h2 id="config-title">Configuración</h2>
+
+            <section class="text-settings" aria-labelledby="text-settings-title">
+                <h3 id="text-settings-title">Tamaño de texto</h3>
+                <div class="text-options">
+                    <label class="text-option">
+                        <span>Texto pequeño</span>
+                        <input type="radio" name="text-size" value="small">
+                        <span class="preview preview-small">
+                            <strong>Texto de ejemplo</strong>
+                            <b>Texto de ejemplo</b>
+                            <small>Texto de ejemplo</small>
+                        </span>
+                    </label>
+
+                    <label class="text-option">
+                        <span>Texto mediano</span>
+                        <input type="radio" name="text-size" value="medium" checked>
+                        <span class="preview preview-medium">
+                            <strong>Texto de ejemplo</strong>
+                            <b>Texto de ejemplo</b>
+                            <small>Texto de ejemplo</small>
+                        </span>
+                    </label>
+
+                    <label class="text-option">
+                        <span>Texto grande</span>
+                        <input type="radio" name="text-size" value="large">
+                        <span class="preview preview-large">
+                            <strong>Texto de ejemplo</strong>
+                            <b>Texto de ejemplo</b>
+                            <small>Texto de ejemplo</small>
+                        </span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="theme-settings" aria-labelledby="theme-settings-title">
+                <h3 id="theme-settings-title">Modo de color</h3>
+                <div class="theme-options">
+                    <label class="theme-option">
+                        <span>Modo claro</span>
+                        <input type="radio" name="color-mode" value="light" checked>
+                        <span class="theme-preview theme-light">Texto de color</span>
+                    </label>
+                    <label class="theme-option">
+                        <span>Modo oscuro</span>
+                        <input type="radio" name="color-mode" value="dark">
+                        <span class="theme-preview theme-dark">Texto de color</span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="account-actions" aria-labelledby="account-actions-title">
+                <h3 id="account-actions-title">Salir de la cuenta:</h3>
+                <div class="action-buttons">
+                    <button type="button">Desactivar cuenta</button>
+                    <button type="button">Cerrar sesión</button>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer>
+        <h2>IG: @GRUT_updates</h2>
+        <h2>FB: @GRUT_updates</h2>
+        <h2>WAPP: +503 0000-0000</h2>
+        <h2>X: @GRUT_updates</h2>
+    </footer>
+
+</body>
+</html>

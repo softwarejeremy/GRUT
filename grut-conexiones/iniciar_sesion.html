@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - GRUT</title>
+    <link rel="stylesheet" href="css/estilos_globales.css">
+</head>
+<body class="page-iniciar-sesion">
+    <header class="navbar">
+        <div class="logo">
+            <img src="imagenes/logotipo-512.png" alt="Logotipo de la empresa de transporte">
+            <h1>GRUT</h1>
+        </div>
+            <nav class="navlinks" aria-label="Navegación principal">
+                <ul>
+                    <li><a class="btn" href="inicio.html">Inicio</a></li>
+                    <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
+                    <li><a class="btn" href="soporte.html">Soporte</a></li>
+                    <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                    <li><a class="btn" href="seleccionar_cuenta.html">Cuenta</a></li>
+                </ul>
+            </nav>
+    </header>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <main id="contenido" tabindex="-1">
+        <section class="tarjeta-login">
+            <a href="inicio.html" class="btn-regresar">&larr; Regresar a elegir</a>
+
+            <div class="contenido-login">
+                <div class="columna-credenciales">
+                    <h2>Credenciales</h2>
+                    <form id="login" method="POST" action="php/iniciar_sesion.php" aria-label="Formulario de inicio de sesión">
+                        <label for="email_user">Correo electrónico</label>
+                        <input type="email" id="email_user" name="email" autocomplete="email" aria-label="Correo electrónico" placeholder="ejemplo@gmail.com" required>
+                        <label for="passwd">Contraseña</label>
+                        <input type="password" id="passwd" name="password" autocomplete="current-password" aria-label="Contraseña" placeholder="Ingresa tu contraseña (mínimo 6 caracteres)" required>
+                        <a href="registro.html" class="enlace-registro">¿No tienes una cuenta?<br>Crea una aquí &rarr;</a>
+                        <button type="submit">Iniciar sesión</button>
+                        <p id="mensajeError" aria-live="polite"></p>
+                    </form>
+                </div>
+
+                <div class="columna-opciones">
+
+                </div>
+
+                <div class="columna-perfil">
+                    <img src="imagenes/icono-usuario-512.png" alt="Perfil de usuario" class="icono-perfil">
+                    <p>¡Bienvenido de vuelta!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <footer class="footer-social">
+        <p>
+            <span>IG: @GRUT_updates</span>
+            <span>FB: @GRUT_updates</span>
+            <span>WAPP: +503 0000-0000</span>
+            <span>X: @GRUT_updates</span>
+        </p>
+    </footer>
+    <script src="scripts/validacion_login.js"></script>
+</body>
+</html>

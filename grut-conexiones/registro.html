@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrarse - GRUT</title>
+    <link rel="stylesheet" href="css/estilos_globales.css">
+</head>
+<body class="page-registro">
+        <header class="navbar">
+            <div class="logo">
+                <img src="imagenes/logotipo-512.png" alt="Logotipo de la empresa de transporte" class="logo">
+                <h1>GRUT</h1>
+            </div>
+                <nav class="navlinks" aria-label="Navegación principal">
+                <ul>
+                    <li><a class="btn" href="inicio.html">Inicio</a></li>
+                    <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
+                    <li><a class="btn" href="soporte.html">Soporte</a></li>
+                    <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                    <li><a class="btn" href="seleccionar_cuenta.html">Cuenta</a></li>
+                </ul>
+            </nav>
+        </header>
+
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <main class="registro-main" id="contenido" tabindex="-1">
+        <section class="tarjeta-registro">
+        <h2 class="subtitulo"> Registro </h2>
+            
+            <a href="inicio.html" id="linkRegresar" class="btn-regresar">&larr; Regresar a elegir</a>
+            
+            <form id="registroForm" method="POST" action="php/procesar_register.php">
+                
+                <div class="contenedor-columnas">
+                    <div class="columna-izquierda">
+                        
+                        <div class="fila-campos">
+                        <div class="grupo-input">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" id="nombre" name="nombre" autocomplete="given-name" placeholder="Escribe aquí..." required>
+                        </div>
+                        
+                        <div class="grupo-input">
+                            <label for="apellido">Apellido</label>
+                            <input type="text" id="apellido" name="apellido" autocomplete="family-name" placeholder="Escribe aquí..." required>
+                        </div>
+                        </div>
+
+                        <div class="fila-campos">
+                        <div class="grupo-input">
+                            <label for="email">Correo electrónico</label>
+                            <input type="email" id="email" name="email" autocomplete="email" placeholder="ej: nombre@correo.com" required>
+                        </div>
+
+                        <div class="grupo-input">
+                            <label for="telefono">Teléfono</label>
+                            <input type="tel" id="telefono" name="telefono" autocomplete="tel" placeholder="ej: 0000-0000" required>
+                        </div>
+                        </div>
+
+                        <div class="fila-campos">
+                        <div class="grupo-input">
+                            <label for="password">Contraseña</label>
+                            <input type="password" id="password" name="password" autocomplete="new-password" placeholder="Escribe aquí..." required>
+                        </div>
+
+                        <div class="grupo-input">
+                            <label for="confirmPassword">Confirmar contraseña</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Escribe aquí..." required>
+                        </div>
+                        </div>
+                        <!--PONER EN EL JS LA SELECCIÓN DEL CENTRO EDUCATIVO / UNIVERSIDAD Y CURSO DE EDUCACIÓN-->
+                        <div class="fila-campos">
+                            <div class="grupo-input">
+                                <label for="centro">Centro educativo / Universidad</label>
+                                <select id="centro" name="centro" autocomplete="organization" required>
+                                    <option value="" selected disabled>Selecciona aquí</option>
+                                    <option value="cedolores">Centro Escolar Cantón Dolores Apulo</option>
+                                    <option value="patricio">Colegio San Patricio</option>
+                                    <option value="donbosco">Universidad Don Bosco</option>
+                                    <option value="bautista">Colegio Bautista</option>
+                                    <option value="utec">Universidad Tecnológica de El Salvador</option>
+                                </select>
+                            </div>
+
+                            <div class="grupo-input">
+                                <label for="curso">Curso de educación</label>
+                                <select id="curso" name="curso" required>
+                                    <option value="" selected disabled>Selecciona aquí</option>
+                                    <option value="primaria">Primaria</option>
+                                    <option value="secundaria">Secundaria</option>
+                                    <option value="bachillerato">Bachillerato</option>
+                                    <option value="universitario">Universitario</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="enlace-soporte">
+                            <a href="soporte.html">¿Tienes problemas?<br>Contacta a soporte &rarr;</a>
+                        </div>
+                    </div>
+
+                    <div class="columna-derecha">
+                        
+                        <div class="icono-perfil">
+                            <img src="imagenes/icono-usuario-512.png" alt="Imagen de perfil por defecto" id="imgPerfil" class="icono-usuario">
+                        </div>
+                        
+                        <!-- BORRAR GRUPO-INPUT Y ROL DEL JS-->
+                         <strong> Estudiante </strong>
+
+                         <!--btnSiguiente cambiaria a registrarse-->
+                        
+                        <button type="submit" id="btnSiguiente">Registrarse</button>
+                        
+                        <div id="mensajeError" class="mensaje-error" aria-live="polite"></div>
+                    </div>
+                </div>
+            </form> 
+        </section>
+    </main>
+
+    <footer class="footer-social">
+        <p>
+            <span>IG: @GRUT_updates</span>
+            <span>FB: @GRUT_updates</span>
+            <span>WAPP: +503 0000-0000</span>
+            <span>X: @GRUT_updates</span>
+        </p>
+    </footer>
+
+    <script src="scripts/validacion_registro.js"></script>
+</body>
+</html>

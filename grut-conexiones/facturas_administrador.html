@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facturas | GRUT</title>
+    <link rel="stylesheet" href="css/estilos_globales.css">
+</head>
+<body class="page-facturas">
+
+    <header class="navbar">
+        <div class="logo">
+            <img src="imagenes/logotipo-512.png" alt="Logotipo de la empresa de transporte">
+            <h1>GRUT</h1>
+        </div>
+        <nav class="navlinks" aria-label="Navegación principal">
+            <ul>
+                <li><a class="btn" href="inicio.html">Inicio</a></li>
+                <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
+                <li><a class="btn" href="soporte.html">Soporte</a></li>
+                <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <li><a class="btn" href="seleccionar_cuenta.html">Cuenta</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <main id="contenido" tabindex="-1">
+        <a href="inicio_administrador.html" class="back-link">&larr; Regresar a elegir</a>
+
+        <section class="panel invoice-panel">
+            <h2>Facturas</h2>
+
+            <div class="table-container" role="region" aria-label="Tabla de facturas" tabindex="0">
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>id_factura</th>
+                        <th>id_estudiante</th>
+                        <th>Emisión</th>
+                        <th>Vencimiento</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>9</td>
+                        <td>1/03/2026</td>
+                        <td>1/04/2026</td>
+                        <td>$25.00</td>
+                        <td><span class="invoice-status status-pending"><span aria-hidden="true">⚠</span> PENDIENTE</span></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>6</td>
+                        <td>1/03/2026</td>
+                        <td>1/04/2026</td>
+                        <td>$25.00</td>
+                        <td><span class="invoice-status status-paid"><span aria-hidden="true">✓</span> PAGADO</span></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>7</td>
+                        <td>1/03/2026</td>
+                        <td>1/04/2026</td>
+                        <td>$25.00</td>
+                        <td><span class="invoice-status status-paid"><span aria-hidden="true">✓</span> PAGADO</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <h2>IG: @GRUT_updates</h2>
+        <h2>FB: @GRUT_updates</h2>
+        <h2>WAPP: +503 0000-0000</h2>
+        <h2>X: @GRUT_updates</h2>
+    </footer>
+
+</body>
+</html>
