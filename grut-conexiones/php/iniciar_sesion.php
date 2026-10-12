@@ -6,8 +6,8 @@ require_once("conexion.php");
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
-   $email = trim($_POST["email"] ?? "");
-   $password = ($_POST["password"] ?? "");
+    $email = trim($_POST["email"] ?? "");
+    $password = ($_POST["password"] ?? "");
 
     if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
         die("Formato de correo invalido");
@@ -30,6 +30,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     }
     $stmt->close();
 
+    if($user["rol"] != "Conductor" && $user["rol"] != "Administrador" && $user["rol"] != "Estudiante"){
+        die("No hay panel disponible");
+    }
+    
     session_regenerate_id(true);
     $_SESSION["id_usuario"] = $user["id_usuario"];
     $_SESSION["nombre"] = $user["nombre"];
@@ -39,7 +43,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         header("Location:../inicio_administrador.php");
     } else if($user["rol"] == "Estudiante"){
         header("Location:../inicio_estudiante.php");
-    } else{
+    } else if($user["rol"] == "Conductor"){
         header("Location:../cuenta_conductor.php");
     }
     exit;

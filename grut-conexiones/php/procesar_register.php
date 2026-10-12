@@ -52,7 +52,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 $stmt->close();
 
                 $conexion->commit();
-                echo "registro exitoso";
+                header("Location: ../iniciar_sesion.html");
+                exit;
             } catch(mysqli_sql_exception $e){
                 $conexion->rollback();
 
