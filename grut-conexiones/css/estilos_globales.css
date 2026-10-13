@@ -5245,3 +5245,32 @@ footer h2,
 }
 
 }
+
+#mensajeError {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background-color: #d9534f; 
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    max-width: 90%;
+}
+
+#mensajeError.mostrar {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+#mensajeError.exito {
+    background-color: #5cb85c;
+}

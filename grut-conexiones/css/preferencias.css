@@ -1,0 +1,190 @@
+/* ============================================================
+   Preferencias de usuario (TAREA 13) - adaptado a estilos_globales.css
+   Enlazar DESPUÉS de estilos_globales.css:
+   <link rel="stylesheet" href="css/preferencias.css">
+   Este archivo va SIN @layer a propósito: los estilos sin capa
+   le ganan a los de "@layer pages" y "@layer common".
+   ============================================================ */
+
+/* ---------- Tamaño de texto ----------
+   Tu CSS usa px fijos, por eso se usa zoom en vez de font-size.
+   Escala todo el contenido (texto, botones, tarjetas). */
+html[data-texto="small"] body > header,
+html[data-texto="small"] body > main,
+html[data-texto="small"] body > footer { zoom: 0.875; }
+
+html[data-texto="large"] body > header,
+html[data-texto="large"] body > main,
+html[data-texto="large"] body > footer { zoom: 1.25; }
+
+/* ---------- Modo oscuro ---------- */
+html[data-tema="dark"] {
+  color-scheme: dark;
+  --d-bg: #0f1720;
+  --d-nav: #16212e;
+  --d-card: #223244;
+  --d-card2: #1b2735;
+  --d-border: #3a4d62;
+  --d-text: #e3eaf0;
+  --d-muted: #b9c6d2;
+  --d-title: #9fd0e6;
+  --d-link: #8ab4f8;
+}
+
+/* Fondo general y barra superior */
+html[data-tema="dark"] body { background: var(--d-bg); color: var(--d-text); }
+html[data-tema="dark"] .navbar { background: var(--d-nav); box-shadow: 0 2px 4px #00000066; }
+
+/* Tarjetas / paneles (los grises #d9dee6) */
+html[data-tema="dark"] .tarjeta-registro,
+html[data-tema="dark"] .tarjeta-login,
+html[data-tema="dark"] .config-card,
+html[data-tema="dark"] .account-card,
+html[data-tema="dark"] .panel,
+html[data-tema="dark"] .panel-cuerpo,
+html[data-tema="dark"] .inner-card,
+html[data-tema="dark"] .invoice-panel,
+html[data-tema="dark"] .invoice-table,
+html[data-tema="dark"] .outer-card,
+html[data-tema="dark"] .payments-card,
+html[data-tema="dark"] .card,
+html[data-tema="dark"] .dashboard-nav a,
+html[data-tema="dark"] main > section:first-of-type,
+html[data-tema="dark"] main > section:nth-of-type(2) > h3,
+html[data-tema="dark"] main > section:nth-of-type(2) > p,
+html[data-tema="dark"] main > section:nth-of-type(4) > h3,
+html[data-tema="dark"] main > section:nth-of-type(4) > p,
+html[data-tema="dark"] main > section:nth-of-type(5) {
+  background-color: var(--d-card);
+  border-color: var(--d-border);
+}
+html[data-tema="dark"] .card-wrapper {
+  background-color: var(--d-card2);
+  border-color: var(--d-border);
+}
+html[data-tema="dark"] #login,
+html[data-tema="dark"] .columna-credenciales #login { background-color: transparent; }
+
+/* Superficies "blancas": campos, celdas, tarjetas pequeñas */
+html[data-tema="dark"] .data-table input,
+html[data-tema="dark"] .field-input input,
+html[data-tema="dark"] .campo input,
+html[data-tema="dark"] .campo select,
+html[data-tema="dark"] .grupo-input input,
+html[data-tema="dark"] .grupo-input select,
+html[data-tema="dark"] #login input,
+html[data-tema="dark"] .field-with-icon,
+html[data-tema="dark"] .input-editable,
+html[data-tema="dark"] .panel-cuerpo .campo input[readonly],
+html[data-tema="dark"] .route-info-box,
+html[data-tema="dark"] .stop-card,
+html[data-tema="dark"] .cell-box,
+html[data-tema="dark"] .invoice-table td,
+html[data-tema="dark"] .account-option,
+html[data-tema="dark"] .preview,
+html[data-tema="dark"] .btn-icon,
+html[data-tema="dark"] .btn-editar {
+  background-color: var(--d-card2);
+  color: var(--d-text);
+  border-color: var(--d-border);
+}
+html[data-tema="dark"] .field-with-icon input,
+html[data-tema="dark"] .input-editable input,
+html[data-tema="dark"] .field-with-icon input:focus {
+  background-color: transparent;
+  color: var(--d-text);
+}
+html[data-tema="dark"] .field-with-icon input[readonly] { color: var(--d-muted); }
+html[data-tema="dark"] input::placeholder { color: #7f8c99; }
+
+/* Flecha de los <select> (la original es azul oscuro y no se ve) */
+html[data-tema="dark"] .grupo-input select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%239fd0e6' stroke-width='2' fill='none' fill-rule='evenodd'/></svg>");
+}
+
+/* Títulos, etiquetas y textos azules -> azul claro */
+html[data-tema="dark"] .logo h1,
+html[data-tema="dark"] .subtitulo,
+html[data-tema="dark"] .btn-regresar,
+html[data-tema="dark"] .back-link,
+html[data-tema="dark"] .btn-back,
+html[data-tema="dark"] .welcome,
+html[data-tema="dark"] .welcome-title,
+html[data-tema="dark"] .dashboard-titulo,
+html[data-tema="dark"] .panel-subtitulo,
+html[data-tema="dark"] .route-title,
+html[data-tema="dark"] .route-card-item h3,
+html[data-tema="dark"] .ruta-detalle h4,
+html[data-tema="dark"] .add-title,
+html[data-tema="dark"] .grupo-input label,
+html[data-tema="dark"] .campo label,
+html[data-tema="dark"] .field label,
+html[data-tema="dark"] .input-group label,
+html[data-tema="dark"] #login label,
+html[data-tema="dark"] .data-table th,
+html[data-tema="dark"] .invoice-table th,
+html[data-tema="dark"] .payments-table th,
+html[data-tema="dark"] .config-card h2,
+html[data-tema="dark"] .config-card h3,
+html[data-tema="dark"] .text-option,
+html[data-tema="dark"] .theme-option,
+html[data-tema="dark"] .preview,
+html[data-tema="dark"] .account-card h1,
+html[data-tema="dark"] .account-option-title,
+html[data-tema="dark"] .columna-credenciales h2,
+html[data-tema="dark"] .columna-perfil,
+html[data-tema="dark"] .lista-info strong,
+html[data-tema="dark"] .stop-card strong,
+html[data-tema="dark"] .dashboard-nav a,
+html[data-tema="dark"] main > h2,
+html[data-tema="dark"] main > section:first-of-type h1,
+html[data-tema="dark"] main > section:nth-of-type(2) > h2,
+html[data-tema="dark"] main > section:nth-of-type(2) > h3,
+html[data-tema="dark"] main > section:nth-of-type(4) > h2,
+html[data-tema="dark"] main > section:nth-of-type(4) > h3,
+html[data-tema="dark"] main > section:nth-of-type(5) h1,
+html[data-tema="dark"] main > section:nth-of-type(5) h2 {
+  color: var(--d-title);
+}
+
+/* Texto normal (los #333) -> gris claro */
+html[data-tema="dark"] main p,
+html[data-tema="dark"] main h4,
+html[data-tema="dark"] .lista-info,
+html[data-tema="dark"] .ruta-direccion,
+html[data-tema="dark"] .dashboard-nav a span,
+html[data-tema="dark"] .stop-card {
+  color: var(--d-muted);
+}
+html[data-tema="dark"] .stat-number,
+html[data-tema="dark"] .footer-social p { color: #ffffff; }
+
+/* Enlaces azules */
+html[data-tema="dark"] .enlace-soporte a,
+html[data-tema="dark"] .enlace-registro,
+html[data-tema="dark"] .ruta-detalle a,
+html[data-tema="dark"] main > a { color: var(--d-link); }
+
+/* Botones principales: el hover pasa a azul claro (en vez de blanco brillante) */
+html[data-tema="dark"] #btnSiguiente:hover,
+html[data-tema="dark"] #login button:hover,
+html[data-tema="dark"] .navlinks button:hover,
+html[data-tema="dark"] a.btn:hover,
+html[data-tema="dark"] .btn-details:hover {
+  background: var(--d-title);
+  color: #0f1720;
+}
+/* El botón de la página actual y los de configuración conservan su azul */
+html[data-tema="dark"] .action-buttons button { background: #1a4a63; }
+html[data-tema="dark"] .action-buttons button:hover { background: #2a6a8c; }
+
+/* Bordes de paneles con borde azul oscuro */
+html[data-tema="dark"] .panel,
+html[data-tema="dark"] .payments-card,
+html[data-tema="dark"] .outer-card,
+html[data-tema="dark"] .config-card,
+html[data-tema="dark"] .account-card { border-color: var(--d-border); }
+
+/* Las muestras de la página Configuración conservan sus colores */
+html[data-tema="dark"] .theme-preview.theme-light { background: #ffffff; color: #1a4a63; }
+html[data-tema="dark"] .theme-preview.theme-dark  { background: #14283d; color: #ffffff; }

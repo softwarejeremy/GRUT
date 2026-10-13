@@ -1,29 +1,75 @@
-let form = document.getElementById("login");
-let email_login = document.getElementById("email_user");
-let passwordInput = document.getElementById("passwd");
-let mensajeError = document.getElementById("mensajeError");
+document.addEventListener("DOMContentLoaded", () => {
+    let form = document.getElementById("login");
+    let email_login = document.getElementById("email_user");
+    let passwordInput = document.getElementById("passwd");
+    let mensajeError = document.getElementById("mensajeError");
 
-form.addEventListener("submit", function(evento){
-    evento.preventDefault();
-    mensajeError.textContent = "";
-    let email = email_login.value.trim();
-    let password = passwordInput.value;
+    function mostrarAlerta(texto, esExito = false) {
+        mensajeError.textContent = texto;
+        mensajeError.className = "";
+        if (esExito) {
+            mensajeError.classList.add("exito");
+        }
+        mensajeError.classList.add("mostrar");
 
-    if(email === "" || password === ""){
-        mensajeError.textContent = "Por favor, completa todos los campos";
-        return;
-    }
-    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!regexEmail.test(email)){
-        mensajeError.textContent = "Ingresa un correo válido.";
-        return;
+        setTimeout(() => {
+            mensajeError.classList.remove("mostrar");
+        }, 4000);
     }
 
-    if(password.length < 6){
-        mensajeError.textContent = "Ingresa 6 caracteres o más para la contraseña.";
-        return;
-    }
+    form.addEventListener("submit", async function(evento){
+        evento.preventDefault(); // Evita que el navegador recargue o cambie de página
+        let email = email_login.value.trim();
+        let password = passwordInput.value;
 
-    form.submit();
+        if(email === "" || password === ""){
+            mostrarAlerta("Por favor, completa todos los campos.");
+            return;
+        }
+        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!regexEmail.test(email)){
+            mostrarAlerta("Ingresa un correo válido.");
+            return;
+        }
 
+        if(password.length < 6){
+            mostrarAlerta("Ingresa 6 caracteres o más para la contraseña.");
+            return;
+        }
+
+        // Enviar datos en segundo plano con Fetch (AJAX)
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData
+            });
+
+            let resultado;
+            try {
+                resultado = await response.json();
+            } catch (error) {
+                throw new Error(`El servidor devolvió una respuesta no válida (HTTP ${response.status}).`);
+            }
+
+            if (!resultado || typeof resultado.success !== "boolean") {
+                throw new Error(`El servidor devolvió datos inesperados (HTTP ${response.status}).`);
+            }
+            if (!response.ok && resultado.success) {
+                throw new Error(`El servidor indicó un error (HTTP ${response.status}).`);
+            }
+
+            if (resultado.success) {
+                mostrarAlerta("¡Inicio de sesión exitoso! Redirigiendo...", true);
+                setTimeout(() => {
+                    window.location.href = resultado.redirect; // Redirige solo si es exitoso
+                }, 1500);
+            } else {
+                mostrarAlerta(resultado.message); // Muestra el error en el cuadro flotante
+            }
+        } catch (error) {
+            console.error("Error al iniciar sesión:", error);
+            mostrarAlerta("No se pudo iniciar sesión. Revisa la consola y la conexión con el servidor.");
+        }
+    });
 });

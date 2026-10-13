@@ -1,7 +1,19 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registroForm');
     const mensajeError = document.getElementById('mensajeError');
+
+    function mostrarAlerta(texto, esExito = false) {
+        mensajeError.textContent = texto;
+        mensajeError.className = "";
+        if (esExito) {
+            mensajeError.classList.add("exito");
+        }
+        mensajeError.classList.add("mostrar");
+
+        setTimeout(() => {
+            mensajeError.classList.remove("mostrar");
+        }, 4000);
+    }
 
     const nombre = document.getElementById('nombre');
     const apellido = document.getElementById('apellido');
@@ -16,75 +28,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function obtenerError(campo) {
         const val = campo.value.trim();
-
-        if (val === '') {
-            return 'Todos los campos son obligatorios.';
-        }
-
+        if (val === '') return 'Todos los campos son obligatorios.';
         if (campo.type === 'email') {
             const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!regexEmail.test(val)) return 'Ingresa un correo electrónico válido.';
         }
-
         if (campo.id === 'telefono') {
             const regexTelefono = /^[2678]\d{3}-\d{4}$/;
             if (!regexTelefono.test(val)) return 'El teléfono debe llevar guion (ej: 7000-0000).';
         }
-
-        if (campo.id === 'password') {
-            if (val.length < 6) return 'La contraseña debe tener al menos 6 caracteres.';
-        }
-
-        if (campo.id === 'confirmPassword') {
-            if (val !== password.value) return 'Las contraseñas no coinciden.';
-        }
-
+        if (campo.id === 'password' && val.length < 6) return 'La contraseña debe tener al menos 6 caracteres.';
+        if (campo.id === 'confirmPassword' && val !== password.value) return 'Las contraseñas no coinciden.';
         return '';
     }
 
-    campos.forEach(campo => {
-        campo.addEventListener('blur', () => {
-            mensajeError.textContent = '';
-            const error = obtenerError(campo);
-            if (error) {
-                mensajeError.style.color = '#d9534f';
-                mensajeError.textContent = error;
-            }
-        });
-
-        campo.addEventListener('keydown', (evento) => {
-            if (evento.key === 'Enter') {
-                evento.preventDefault();
-                mensajeError.textContent = '';
-                const error = obtenerError(campo);
-                if (error) {
-                    mensajeError.style.color = '#d9534f';
-                    mensajeError.textContent = error;
-                } else {
-                    mensajeError.textContent = '';
-                }
-            }
-        });
-    });
-
-    form.addEventListener('submit', (evento) => {
+    form.addEventListener('submit', async (evento) => {
         evento.preventDefault(); 
-        mensajeError.textContent = '';
-        mensajeError.style.color = '#d9534f';
 
         for (let campo of campos) {
             const error = obtenerError(campo);
             if (error) {
-                mensajeError.textContent = error;
+                mostrarAlerta(error);
                 campo.focus();
                 return;
             }
         }
 
-        mensajeError.style.color = '#5cb85c';
-        mensajeError.textContent = '¡Registro válido! Procesando datos...';
+        mostrarAlerta('Procesando registro...', true);
 
-        // Todo correcto: ahora sí se envía a php/procesar_register.php
-        form.submit();
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData
+            });
+
+            let resultado;
+            try {
+                resultado = await response.json();
+            } catch (error) {
+                throw new Error(`El servidor devolvió una respuesta no válida (HTTP ${response.status}).`);
+            }
+
+            if (!resultado || typeof resultado.success !== "boolean") {
+                throw new Error(`El servidor devolvió datos inesperados (HTTP ${response.status}).`);
+            }
+            if (!response.ok && resultado.success) {
+                throw new Error(`El servidor indicó un error (HTTP ${response.status}).`);
+            }
+
+            if (resultado.success) {
+                mostrarAlerta("¡Registro exitoso! Redirigiendo al login...", true);
+                setTimeout(() => {
+                    window.location.href = "iniciar_sesion.html";
+                }, 2000);
+            } else {
+                mostrarAlerta(resultado.message);
+            }
+        } catch (error) {
+            console.error("Error al procesar el registro:", error);
+            mostrarAlerta("No se pudo completar el registro. Revisa la consola y la conexión con el servidor.");
+        }
     });
 });

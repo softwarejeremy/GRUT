@@ -29,6 +29,7 @@ CREATE TABLE usuario (
   correo       VARCHAR(150) NOT NULL,
   telefono     VARCHAR(20)  NULL,
   contrasena   VARCHAR(255) NOT NULL,
+  activo       TINYINT(1)   NOT NULL DEFAULT 1,
   UNIQUE KEY uq_usuario_correo (correo)
 );
 

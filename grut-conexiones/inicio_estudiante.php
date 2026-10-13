@@ -17,7 +17,14 @@ $stmt->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio (Estudiante) - GRUT</title>
+    <script src="scripts/preferencias.js"></script>
     <link rel="stylesheet" href="css/estilos_globales.css">
+    <link rel="stylesheet" href="css/preferencias.css">
+    <style>
+        .mensaje-exito, .mensaje-error { padding: 12px 16px; border-radius: 8px; margin: 0 0 16px; font-weight: bold; }
+        .mensaje-exito { background: #d4edda; color: #155724; }
+        .mensaje-error { background: #f8d7da; color: #721c24; }
+    </style>
 </head>
 <body class="page-inicio-estudiante">
 
@@ -33,7 +40,7 @@ $stmt->close();
                     <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                     <li><a class="btn" href="soporte.html">Soporte</a></li>
                     <li><a class="btn" href="configuracion.html">Configuración</a></li>
-                    <li><a class="btn" href="seleccionar_cuenta.html">Cuenta</a></li>
+                    <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
                 </ul>
             </nav>
     </header>
@@ -43,17 +50,24 @@ $stmt->close();
         <!-- Título principal -->
         <h1 class="welcome-title">¡Bienvenido, <?php echo htmlspecialchars($datos["nombre"]); ?>!</h1>
 
+        <!-- Mensaje de éxito o error al guardar el perfil -->
+        <?php if (!empty($_SESSION["perfil_msg"])): ?>
+            <p class="mensaje-<?php echo htmlspecialchars($_SESSION["perfil_msg"]["tipo"]); ?>" role="alert">
+                <?php echo htmlspecialchars($_SESSION["perfil_msg"]["texto"]); ?>
+            </p>
+            <?php unset($_SESSION["perfil_msg"]); ?>
+        <?php endif; ?>
+
         <!-- SECCIÓN 1: Usuario con Inputs de Formulario -->
         <section class="card-wrapper">
             <h2><span aria-hidden="true">👤</span> Usuario</h2>
             <div class="inner-card">
-                <form class="user-grid" onsubmit="event.preventDefault();">
+                <form class="user-grid" id="form-perfil" method="POST" action="php/actualizar_perfil.php">
                     <!-- Nombre -->
                     <div class="input-group">
                         <label for="nombre">Nombre</label>
                         <div class="field-with-icon">
-                            <input type="text" id="nombre" name="nombre" placeholder="" value="<?php echo htmlspecialchars($datos["nombre"]); ?>">
-                                <!-- <button type="button" class="btn-icon edit" aria-label="Editar nombre"><span aria-hidden="true">✏️</span></button> -->
+                            <input type="text" id="nombre" name="nombre" placeholder="" value="<?php echo htmlspecialchars($datos["nombre"]); ?>" maxlength="100" required readonly>
                         </div>
                     </div>
 
@@ -61,8 +75,7 @@ $stmt->close();
                     <div class="input-group">
                         <label for="apellido">Apellido</label>
                         <div class="field-with-icon">
-                            <input type="text" id="apellido" name="apellido" placeholder="" value="<?php echo htmlspecialchars($datos["apellido"]); ?>">
-                                <!-- <button type="button" class="btn-icon edit" aria-label="Editar apellido"><span aria-hidden="true">✏️</span></button> -->
+                            <input type="text" id="apellido" name="apellido" placeholder="" value="<?php echo htmlspecialchars($datos["apellido"]); ?>" maxlength="100" required readonly>
                         </div>
                     </div>
 
@@ -70,17 +83,15 @@ $stmt->close();
                     <div class="input-group">
                         <label for="curso">Curso de educación</label>
                         <div class="field-with-icon">
-                            <input type="text" id="curso" name="curso" placeholder="" value="<?php echo htmlspecialchars($datos["curso_educacion"]); ?>">
-                                <!-- <button type="button" class="btn-icon edit" aria-label="Editar curso"><span aria-hidden="true">✏️</span></button> -->
+                            <input type="text" id="curso" name="curso" placeholder="" value="<?php echo htmlspecialchars($datos["curso_educacion"]); ?>" maxlength="50" required readonly>
                         </div>
                     </div>
 
-                    <!-- Correo electrónico -->
+                    <!-- Correo electrónico (no se edita en esta tarea, no se envía) -->
                     <div class="input-group">
                         <label for="email">Correo electrónico</label>
                         <div class="field-with-icon">
-                            <input type="email" id="email" name="email" placeholder="" value="<?php echo htmlspecialchars($datos["correo"]); ?>">
-                                <!-- <button type="button" class="btn-icon edit" aria-label="Editar correo electrónico"><span aria-hidden="true">✏️</span></button> -->
+                            <input type="email" id="email" placeholder="" value="<?php echo htmlspecialchars($datos["correo"]); ?>" readonly>
                         </div>
                     </div>
 
@@ -88,8 +99,7 @@ $stmt->close();
                     <div class="input-group">
                         <label for="telefono">Teléfono</label>
                         <div class="field-with-icon">
-                            <input type="tel" id="telefono" name="telefono" placeholder="" value="<?php echo htmlspecialchars($datos["telefono"]); ?>">
-                                <!-- <button type="button" class="btn-icon edit" aria-label="Editar teléfono"><span aria-hidden="true">✏️</span></button> -->
+                            <input type="tel" id="telefono" name="telefono" placeholder="" value="<?php echo htmlspecialchars($datos["telefono"]); ?>" maxlength="9" required readonly>
                         </div>
                     </div>
 
@@ -97,20 +107,20 @@ $stmt->close();
                     <div class="input-group">
                         <label for="centro">Centro educativo</label>
                         <div class="field-with-icon">
-                            <input type="text" id="centro" name="centro" placeholder="" value="<?php echo htmlspecialchars($datos["centro_educativo"]); ?>">
-                                <!-- <button type="button" class="btn-icon edit" aria-label="Editar centro educativo"><span aria-hidden="true">✏️</span></button> -->
+                            <input type="text" id="centro" name="centro" placeholder="" value="<?php echo htmlspecialchars($datos["centro_educativo"]); ?>" maxlength="150" required readonly>
                         </div>
                     </div>
 
-                    <!-- ID usuario -->
+                    <!-- ID usuario (solo informativo, sin name: NO se envía; el PHP usa la sesión) -->
                     <div class="input-group full-width">
                         <label for="id_usuario">ID usuario</label>
                         <div class="field-with-icon single">
-                            <input type="number" id="id_usuario" name="id_usuario" value="<?php echo htmlspecialchars($_SESSION["id_usuario"]); ?>" readonly>
+                            <input type="number" id="id_usuario" value="<?php echo htmlspecialchars($_SESSION["id_usuario"]); ?>" readonly>
                         </div>
+                    </div>
+
                     <div>
-                    <a class="btn">Editar información</a> <!-- CON JS CUANDO ESTO   ESTE EN MODO EDICIÓN VA A DECIR "Guardar" EL ID USUARIO NO SE VA A PODER EDITAR -->
-                </div>
+                        <button type="button" class="btn" id="btn-editar">Editar información</button>
                     </div>
                 </form>
             </div>
@@ -185,7 +195,7 @@ $stmt->close();
             <h2><span aria-hidden="true">💳</span> Pagos y facturas</h2>
             <div class="inner-card payments-summary-card">
                 <p>Mantén tus cuentas al día. Te invitamos a revisar tus pagos y facturas pendientes para asegurar que todo esté al corriente.</p>
-                <a href="pagos.html" class="btn-details">Ver detalles...</a>
+                <a href="pagos.php" class="btn-details">Ver detalles...</a>
             </div>
         </section>
     </main>
@@ -199,6 +209,26 @@ $stmt->close();
             <span><strong>X:</strong> @GRUT_updates</span>
         </div>
     </footer>
+
+    <script>
+    // Primer clic: habilita los campos. Segundo clic ("Guardar"): valida y envía.
+    const form = document.getElementById("form-perfil");
+    const btn = document.getElementById("btn-editar");
+    const editables = ["nombre", "apellido", "curso", "telefono", "centro"]
+        .map(id => document.getElementById(id));
+    let editando = false;
+
+    btn.addEventListener("click", () => {
+        if (!editando) {
+            editables.forEach(i => i.removeAttribute("readonly"));
+            btn.textContent = "Guardar";
+            editando = true;
+            editables[0].focus();
+        } else if (form.reportValidity()) {
+            form.submit();
+        }
+    });
+    </script>
 
 </body>
 </html>
