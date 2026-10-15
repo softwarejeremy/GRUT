@@ -10,17 +10,18 @@ CREATE TABLE roles (
   descripcion  VARCHAR(255) NULL
 );
 
-INSERT INTO roles (nombre, descripcion) VALUES
-('Administrador', 'Control total del sistema'),
-('Tutor', 'Padre o encargado del estudiante'),
-('Estudiante', 'Usuario que recibe el servicio de transporte'),
-('Conductor', 'Encargado de conducir el bus'),
-('Coordinador', 'Coordina las rutas y horarios'),
-('Supervisor', 'Supervisa el cumplimiento de las rutas'),
-('Soporte', 'Soporte tecnico del sistema'),
-('Finanzas', 'Encargado de la facturacion'),
-('Secretaria', 'Encargada de tramites administrativos'),
-('Director', 'Director del centro educativo');
+-- Los id van escritos para que no cambien: el LEEME y el codigo usan
+-- 1 = Administrador, 3 = Estudiante, 4 = Conductor. El 2 (Tutor) ya no se usa.
+INSERT INTO roles (id_roles, nombre, descripcion) VALUES
+(1, 'Administrador', 'Control total del sistema'),
+(3, 'Estudiante', 'Usuario que recibe el servicio de transporte'),
+(4, 'Conductor', 'Encargado de conducir el bus'),
+(5, 'Coordinador', 'Coordina las rutas y horarios'),
+(6, 'Supervisor', 'Supervisa el cumplimiento de las rutas'),
+(7, 'Soporte', 'Soporte tecnico del sistema'),
+(8, 'Finanzas', 'Encargado de la facturacion'),
+(9, 'Secretaria', 'Encargada de tramites administrativos'),
+(10, 'Director', 'Director del centro educativo');
 
 CREATE TABLE usuario (
   id_usuario   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -137,8 +138,8 @@ CREATE TABLE usuario_rol (
 
 INSERT INTO usuario_rol (id_usuario, id_roles, fecha_asignacion) VALUES
 (1, 1, '2025-01-10 08:00:00'),
-(2, 2, '2025-01-10 08:05:00'),
-(3, 2, '2025-01-11 08:00:00'),
+(2, 4, '2025-01-10 08:05:00'),
+(3, 4, '2025-01-11 08:00:00'),
 (4, 3, '2025-01-11 08:05:00'),
 (5, 4, '2025-01-12 08:00:00'),
 (6, 4, '2025-01-12 08:05:00'),
