@@ -10,18 +10,12 @@ CREATE TABLE roles (
   descripcion  VARCHAR(255) NULL
 );
 
--- Los id van escritos para que no cambien: el LEEME y el codigo usan
--- 1 = Administrador, 3 = Estudiante, 4 = Conductor. El 2 (Tutor) ya no se usa.
+-- Solo existen los 3 roles que tienen panel. Los id van escritos para que no
+-- cambien: el LEEME y el codigo usan 1 = Administrador, 3 = Estudiante, 4 = Conductor.
 INSERT INTO roles (id_roles, nombre, descripcion) VALUES
 (1, 'Administrador', 'Control total del sistema'),
 (3, 'Estudiante', 'Usuario que recibe el servicio de transporte'),
-(4, 'Conductor', 'Encargado de conducir el bus'),
-(5, 'Coordinador', 'Coordina las rutas y horarios'),
-(6, 'Supervisor', 'Supervisa el cumplimiento de las rutas'),
-(7, 'Soporte', 'Soporte tecnico del sistema'),
-(8, 'Finanzas', 'Encargado de la facturacion'),
-(9, 'Secretaria', 'Encargada de tramites administrativos'),
-(10, 'Director', 'Director del centro educativo');
+(4, 'Conductor', 'Encargado de conducir el bus');
 
 CREATE TABLE usuario (
   id_usuario   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -143,10 +137,10 @@ INSERT INTO usuario_rol (id_usuario, id_roles, fecha_asignacion) VALUES
 (4, 3, '2025-01-11 08:05:00'),
 (5, 4, '2025-01-12 08:00:00'),
 (6, 4, '2025-01-12 08:05:00'),
-(7, 5, '2025-01-13 08:00:00'),
-(8, 6, '2025-01-13 08:05:00'),
-(9, 8, '2025-01-14 08:00:00'),
-(10, 9, '2025-01-14 08:05:00');
+(7, 4, '2025-01-13 08:00:00'),
+(8, 4, '2025-01-13 08:05:00'),
+(9, 4, '2025-01-14 08:00:00'),
+(10, 4, '2025-01-14 08:05:00');
 
 CREATE TABLE rutas (
   id_ruta       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
