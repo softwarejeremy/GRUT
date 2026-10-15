@@ -1,11 +1,76 @@
 <?php
-require_once("php/verificar_sesion.php");
-require_once("php/conexion.php");
-if($_SESSION["rol"] != "Administrador"){
-    header("Location: iniciar_sesion.html");
-    exit;
+// Tarea 11 (Fabiola): mostrar los buses. Tarea 12 (Bryan): agregar, editar y borrar.
+require_once("php/admin_comun.php");
+
+$estados = ["activo", "mantenimiento", "inactivo"];
+
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+    comprobar_csrf();
+
+    function validar_bus($campo, $valor, $estados){
+        if($campo == "placa"){
+            return texto_valido($valor, 3, 20) ? "" : "La placa debe tener de 3 a 20 caracteres.";
+        }
+        if($campo == "capacidad"){
+            return (ctype_digit($valor) && (int)$valor >= 1 && (int)$valor <= 100) ? "" : "La capacidad debe ser un número entre 1 y 100.";
+        }
+        if($campo == "estado"){
+            return in_array($valor, $estados, true) ? "" : "Estado no válido.";
+        }
+        return "Campo desconocido.";
+    }
+
+    $accion = $_POST["accion"] ?? "";
+    try {
+        if($accion == "crear"){
+            $placa = trim($_POST["placa"] ?? "");
+            $capacidad = trim($_POST["capacidad"] ?? "");
+            $estado = $_POST["estado"] ?? "";
+            foreach(["placa" => $placa, "capacidad" => $capacidad, "estado" => $estado] as $campo => $valor){
+                $error = validar_bus($campo, $valor, $estados);
+                if($error != ""){ responder(false, $error, 422); }
+            }
+            $stmt = $conexion->prepare("INSERT INTO buses (placa, capacidad, estado) VALUES (?, ?, ?)");
+            $capacidad = (int)$capacidad;
+            $stmt->bind_param("sis", $placa, $capacidad, $estado);
+            $stmt->execute();
+            $stmt->close();
+            responder(true, "Bus creado.");
+        }
+
+        if($accion == "actualizar"){
+            $id = (int)($_POST["id"] ?? 0);
+            $campo = $_POST["campo"] ?? "";
+            $valor = trim($_POST["valor"] ?? "");
+            $error = validar_bus($campo, $valor, $estados);
+            if($id <= 0){ responder(false, "ID no válido.", 422); }
+            if($error != ""){ responder(false, $error, 422); }
+
+            // El nombre de la columna sale de esta lista, nunca del formulario
+            $columnas = ["placa" => "placa", "capacidad" => "capacidad", "estado" => "estado"];
+            $stmt = $conexion->prepare("UPDATE buses SET " . $columnas[$campo] . " = ? WHERE id_bus = ?");
+            $stmt->bind_param("si", $valor, $id);
+            $stmt->execute();
+            $stmt->close();
+            responder(true, "Cambio guardado.");
+        }
+
+        if($accion == "eliminar"){
+            $id = (int)($_POST["id"] ?? 0);
+            $stmt = $conexion->prepare("DELETE FROM buses WHERE id_bus = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->close();
+            responder(true, "Bus eliminado.");
+        }
+
+        responder(false, "Acción desconocida.", 400);
+    } catch(mysqli_sql_exception $e){
+        responder_error_mysql($e, "Este bus está asignado a una ruta. Quítalo de la ruta antes de borrarlo.");
+    }
 }
-$stmt = $conexion->prepare("SELECT placa, capacidad, estado FROM buses ORDER BY id_bus");
+
+$stmt = $conexion->prepare("SELECT id_bus, placa, capacidad, estado FROM buses ORDER BY id_bus");
 $stmt->execute();
 $resultado = $stmt->get_result();
 $stmt->close();
@@ -20,7 +85,7 @@ $stmt->close();
     <link rel="stylesheet" href="css/estilos_globales.css">
     <link rel="stylesheet" href="css/preferencias.css">
 </head>
-<body class="page-buses">
+<body class="page-buses" data-csrf="<?php echo htmlspecialchars($csrf); ?>">
 
     <header class="navbar">
         <div class="logo">
@@ -46,8 +111,8 @@ $stmt->close();
             <h2><span aria-hidden="true">🚍</span> Buses</h2>
 
             <div class="panel-actions">
-                <button class="btn-add">+ Nuevo bus</button>
-                <button class="btn-remove">- Borrar bus</button>
+                <button type="button" class="btn-add" id="btnNuevo">+ Nuevo bus</button>
+                <button type="button" class="btn-remove" id="btnBorrar">- Borrar bus</button>
             </div>
 
             <div class="table-container" role="region" aria-label="Tabla de buses" tabindex="0">
@@ -57,14 +122,22 @@ $stmt->close();
                             <th>Placa</th>
                             <th>Capacidad</th>
                             <th>Estado</th>
+                            <th class="col-borrar" aria-label="Acciones"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php while($fila = $resultado->fetch_assoc()){ ?>
-                        <tr>
-                            <td><input type="text" value="<?php echo htmlspecialchars($fila["placa"]); ?>" readonly><button class="edit-btn">✏️</button></td>
-                            <td><input type="text" value="<?php echo htmlspecialchars($fila["capacidad"]); ?>" readonly><button class="edit-btn">✏️</button></td>
-                            <td><input type="text" value="<?php echo htmlspecialchars(ucfirst($fila["estado"] ?? "")); ?>" readonly><button class="edit-btn">✏️</button></td>
+                        <tr data-id="<?php echo (int)$fila["id_bus"]; ?>" data-nombre="el bus <?php echo htmlspecialchars($fila["placa"]); ?>">
+                            <td><input type="text" data-campo="placa" value="<?php echo htmlspecialchars($fila["placa"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar placa">✏️</button></td>
+                            <td><input type="number" data-campo="capacidad" min="1" max="100" value="<?php echo htmlspecialchars($fila["capacidad"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar capacidad">✏️</button></td>
+                            <td>
+                                <select data-campo="estado" aria-label="Estado del bus">
+                                    <?php foreach($estados as $opcion){ ?>
+                                    <option value="<?php echo $opcion; ?>" <?php if(strtolower($fila["estado"] ?? "") == $opcion){ echo "selected"; } ?>><?php echo ucfirst($opcion); ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                            <td class="col-borrar"><button type="button" class="del-btn" title="Borrar" aria-label="Borrar bus">🗑️</button></td>
                         </tr>
                         <?php } ?>
                         <?php if($resultado->num_rows === 0){ ?>
@@ -76,6 +149,25 @@ $stmt->close();
         </section>
     </main>
 
+    <dialog id="dlgNuevo">
+        <form id="formNuevo" method="dialog">
+            <h3>Nuevo bus</h3>
+            <input name="placa" placeholder="Placa (ej. SJB-011)" maxlength="20" required>
+            <input name="capacidad" type="number" min="1" max="100" placeholder="Capacidad" required>
+            <select name="estado" required>
+                <?php foreach($estados as $opcion){ ?>
+                <option value="<?php echo $opcion; ?>"><?php echo ucfirst($opcion); ?></option>
+                <?php } ?>
+            </select>
+            <menu>
+                <button type="button" id="cancelarNuevo">Cancelar</button>
+                <button type="submit">Guardar</button>
+            </menu>
+        </form>
+    </dialog>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+
     <footer>
         <h2>IG: @GRUT_updates</h2>
         <h2>FB: @GRUT_updates</h2>
@@ -83,5 +175,6 @@ $stmt->close();
         <h2>X: @GRUT_updates</h2>
     </footer>
 
+    <script src="scripts/admin_crud.js"></script>
 </body>
 </html>
