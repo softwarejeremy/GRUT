@@ -1,5 +1,5 @@
 <?php
-// Funciones comunes de las páginas del administrador (tarea 12).
+// Tarea 12 (Bryan): funciones comunes de las páginas del administrador.
 // Cada página *_administrador.php lo incluye al inicio:
 //   - comprueba la sesión y el rol "Administrador"
 //   - si la petición es POST, la página responde en JSON (crear, actualizar, eliminar)

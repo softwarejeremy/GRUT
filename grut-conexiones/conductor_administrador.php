@@ -3,6 +3,9 @@
 // Un conductor = fila en usuario + fila en conductor + rol "Conductor" en usuario_rol.
 require_once("php/admin_comun.php");
 
+// ---------- Tarea 12 (Bryan): agregar, editar y borrar ----------
+// scripts/admin_crud.js envía cada cambio por POST (fetch) y aquí se responde en JSON.
+// Todas las consultas son preparadas (?) y el nombre de la columna sale de una lista fija.
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     comprobar_csrf();
 
@@ -18,6 +21,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
         if($campo == "telefono"){
             return telefono_valido($valor) ? "" : "El teléfono debe llevar guion (ej: 7000-0000).";
+        }
+        if($campo == "activo"){
+            // Tarea 13: 1 = puede iniciar sesión, 0 = cuenta desactivada
+            return ($valor === "0" || $valor === "1") ? "" : "Valor no válido.";
         }
         if($campo == "contrasena"){
             return mb_strlen($valor) >= 6 ? "" : "La contraseña debe tener al menos 6 caracteres.";
@@ -75,7 +82,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 $stmt = $conexion->prepare("UPDATE conductor SET licencia = ? WHERE id_conductor = ?");
             } else {
                 // El nombre de la columna sale de esta lista, nunca del formulario
-                $columnas = ["nombre" => "nombre", "apellido" => "apellido", "correo" => "correo", "telefono" => "telefono"];
+                $columnas = ["nombre" => "nombre", "apellido" => "apellido", "correo" => "correo", "telefono" => "telefono", "activo" => "activo"];
                 $stmt = $conexion->prepare("UPDATE usuario u INNER JOIN conductor c ON c.id_usuario = u.id_usuario SET u." . $columnas[$campo] . " = ? WHERE c.id_conductor = ?");
             }
             $stmt->bind_param("si", $valor, $id);
@@ -136,7 +143,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 }
 
-$stmt = $conexion->prepare("SELECT c.id_conductor, u.nombre, u.apellido, c.licencia, u.correo, u.telefono FROM conductor c INNER JOIN usuario u ON u.id_usuario = c.id_usuario ORDER BY c.id_conductor");
+// ---------- Tarea 11 (Fabiola): consultas para mostrar los datos en la página ----------
+$stmt = $conexion->prepare("SELECT c.id_conductor, u.nombre, u.apellido, c.licencia, u.correo, u.telefono, u.activo FROM conductor c INNER JOIN usuario u ON u.id_usuario = c.id_usuario ORDER BY c.id_conductor");
 $stmt->execute();
 $resultado = $stmt->get_result();
 $stmt->close();
@@ -164,6 +172,7 @@ $stmt->close();
                 <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                 <li><a class="btn" href="soporte.html">Soporte</a></li>
                 <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                 <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
             </ul>
         </nav>
@@ -176,11 +185,14 @@ $stmt->close();
         <section class="panel">
             <h2><span aria-hidden="true">🧑‍✈️</span> Conductor</h2>
 
+            <!-- Tarea 12: botones para agregar y para activar el modo borrar -->
             <div class="panel-actions">
                 <button type="button" class="btn-add" id="btnNuevo">+ Nuevo conductor</button>
                 <button type="button" class="btn-remove" id="btnBorrar">- Borrar conductor</button>
             </div>
 
+            <!-- Tarea 11: tabla con los datos de la base (un while = una fila por registro).
+                 Tarea 12: el lápiz edita el campo, las listas se guardan al cambiar y 🗑️ borra la fila. -->
             <div class="table-container" role="region" aria-label="Tabla de conductores" tabindex="0">
                 <table class="data-table">
                     <thead>
@@ -190,22 +202,25 @@ $stmt->close();
                             <th>Licencia</th>
                             <th>Correo</th>
                             <th>Teléfono</th>
+                            <th>Cuenta activa</th>
                             <th class="col-borrar" aria-label="Acciones"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php while($fila = $resultado->fetch_assoc()){ ?>
                         <tr data-id="<?php echo (int)$fila["id_conductor"]; ?>" data-nombre="al conductor <?php echo htmlspecialchars($fila["nombre"] . " " . $fila["apellido"]); ?>">
-                            <td><input type="text" data-campo="nombre" value="<?php echo htmlspecialchars($fila["nombre"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar nombre">✏️</button></td>
-                            <td><input type="text" data-campo="apellido" value="<?php echo htmlspecialchars($fila["apellido"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar apellido">✏️</button></td>
-                            <td><input type="text" data-campo="licencia" value="<?php echo htmlspecialchars($fila["licencia"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar licencia">✏️</button></td>
-                            <td><input type="text" data-campo="correo" value="<?php echo htmlspecialchars($fila["correo"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar correo">✏️</button></td>
-                            <td><input type="text" data-campo="telefono" value="<?php echo htmlspecialchars($fila["telefono"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar teléfono">✏️</button></td>
+                            <td><input type="text" data-campo="nombre" required minlength="2" maxlength="100" data-error="Nombre y apellido: de 2 a 100 caracteres." value="<?php echo htmlspecialchars($fila["nombre"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar nombre">✏️</button></td>
+                            <td><input type="text" data-campo="apellido" required minlength="2" maxlength="100" data-error="Nombre y apellido: de 2 a 100 caracteres." value="<?php echo htmlspecialchars($fila["apellido"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar apellido">✏️</button></td>
+                            <td><input type="text" data-campo="licencia" required minlength="3" maxlength="50" data-error="La licencia debe tener de 3 a 50 caracteres." value="<?php echo htmlspecialchars($fila["licencia"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar licencia">✏️</button></td>
+                            <td><input type="email" data-campo="correo" required maxlength="150" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" data-error="Escribe un correo válido (ej. nombre@correo.com)." value="<?php echo htmlspecialchars($fila["correo"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar correo">✏️</button></td>
+                            <td><input type="text" data-campo="telefono" required pattern="[2678][0-9]{3}-[0-9]{4}" maxlength="9" data-error="El teléfono debe tener el formato 7000-0000 y empezar con 2, 6, 7 u 8." value="<?php echo htmlspecialchars($fila["telefono"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar teléfono">✏️</button></td>
+                            <!-- Tarea 13: el administrador puede reactivar una cuenta desactivada -->
+                            <td><select data-campo="activo" aria-label="Cuenta activa"><option value="1"<?php echo (int)$fila["activo"] === 1 ? " selected" : ""; ?>>Sí</option><option value="0"<?php echo (int)$fila["activo"] === 1 ? "" : " selected"; ?>>No (desactivada)</option></select></td>
                             <td class="col-borrar"><button type="button" class="del-btn" title="Borrar" aria-label="Borrar conductor">🗑️</button></td>
                         </tr>
                         <?php } ?>
                         <?php if($resultado->num_rows === 0){ ?>
-                        <tr><td colspan="5">No hay conductores registrados</td></tr>
+                        <tr><td colspan="6">No hay conductores registrados</td></tr>
                         <?php } ?>
                     </tbody>
                 </table>
@@ -213,15 +228,16 @@ $stmt->close();
         </section>
     </main>
 
+    <!-- Tarea 12: formulario para agregar (lo abre el botón "+ Nuevo"); el JS lo valida antes de enviar -->
     <dialog id="dlgNuevo">
         <form id="formNuevo" method="dialog">
             <h3>Nuevo conductor</h3>
-            <input name="nombre" placeholder="Nombre" maxlength="100" required>
-            <input name="apellido" placeholder="Apellido" maxlength="100" required>
-            <input name="licencia" placeholder="Licencia (ej. 0000-000000-000-0)" maxlength="50" required>
-            <input name="correo" type="email" placeholder="Correo" maxlength="150" required>
-            <input name="contrasena" type="password" placeholder="Contraseña (mín. 6)" minlength="6" required autocomplete="new-password">
-            <input name="telefono" placeholder="Teléfono (ej. 7000-0000)" pattern="[2678][0-9]{3}-[0-9]{4}" required>
+            <input name="nombre" placeholder="Nombre" required minlength="2" maxlength="100" data-error="Nombre y apellido: de 2 a 100 caracteres.">
+            <input name="apellido" placeholder="Apellido" required minlength="2" maxlength="100" data-error="Nombre y apellido: de 2 a 100 caracteres.">
+            <input name="licencia" placeholder="Licencia (ej. 0000-000000-000-0)" required minlength="3" maxlength="50" data-error="La licencia debe tener de 3 a 50 caracteres.">
+            <input name="correo" type="email" placeholder="Correo" required maxlength="150" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" data-error="Escribe un correo válido (ej. nombre@correo.com).">
+            <input name="contrasena" type="password" placeholder="Contraseña (mín. 6)" minlength="6" required autocomplete="new-password" data-error="La contraseña debe tener al menos 6 caracteres.">
+            <input name="telefono" placeholder="Teléfono (ej. 7000-0000)" required pattern="[2678][0-9]{3}-[0-9]{4}" maxlength="9" data-error="El teléfono debe tener el formato 7000-0000 y empezar con 2, 6, 7 u 8.">
             <menu>
                 <button type="button" id="cancelarNuevo">Cancelar</button>
                 <button type="submit">Guardar</button>
@@ -238,6 +254,7 @@ $stmt->close();
         <h2>X: @GRUT_updates</h2>
     </footer>
 
+    <!-- Tarea 12: JavaScript que valida y envía los cambios al PHP de esta misma página -->
     <script src="scripts/admin_crud.js"></script>
 </body>
 </html>

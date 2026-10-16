@@ -1,7 +1,11 @@
+// Tarea 3 (Gustavo): validar el registro y mostrar los mensajes dentro del formulario.
+// Tarea 2 (Jeremy): si el registro sale bien, se va a iniciar_sesion.html.
+// Flujo: formulario -> esta validación -> php/procesar_register.php (fetch) -> respuesta JSON -> mensaje.
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registroForm');
     const mensajeError = document.getElementById('mensajeError');
 
+    // Muestra el aviso #mensajeError (rojo = error, verde = éxito) durante 4 segundos
     function mostrarAlerta(texto, esExito = false) {
         mensajeError.textContent = texto;
         mensajeError.className = "";
@@ -26,9 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const campos = [nombre, apellido, email, telefono, password, confirmPassword, centro, curso];
 
+    // Devuelve el mensaje de error de un campo, o '' si está bien
     function obtenerError(campo) {
         const val = campo.value.trim();
         if (val === '') return 'Todos los campos son obligatorios.';
+        if ((campo.id === 'nombre' || campo.id === 'apellido') && !/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s'.-]{1,99}$/.test(val)) {
+            return 'El nombre y el apellido deben tener de 2 a 100 letras.';
+        }
         if (campo.type === 'email') {
             const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!regexEmail.test(val)) return 'Ingresa un correo electrónico válido.';
@@ -80,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (resultado.success) {
                 mostrarAlerta("¡Registro exitoso! Redirigiendo al login...", true);
                 setTimeout(() => {
-                    window.location.href = "iniciar_sesion.html";
+                    window.location.href = "iniciar_sesion.html";   // tarea 2
                 }, 2000);
             } else {
                 mostrarAlerta(resultado.message);

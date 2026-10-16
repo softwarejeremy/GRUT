@@ -1,4 +1,4 @@
-// Agregar, editar y borrar en las páginas del administrador (tarea 12).
+// Tarea 12 (Bryan): agregar, editar y borrar en las páginas del administrador.
 // Basado en el script de conductor_administrador.php de Bryan.
 // La página debe tener: <body data-csrf="...">, filas <tr data-id="..." data-nombre="...">,
 // campos con data-campo, el diálogo #dlgNuevo con #formNuevo y el aviso #toast.
@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const toast = document.getElementById("toast");
 
     function aviso(mensaje, esError) {
+        // Si hay un formulario (dialog) abierto, el aviso se pone dentro para que se vea encima
+        const abierto = document.querySelector("dialog[open]");
+        (abierto || document.body).appendChild(toast);
         toast.textContent = mensaje;
         toast.className = esError ? "error" : "";
         toast.style.display = "block";
@@ -28,6 +31,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // ---------- Validación con JavaScript antes de enviar al PHP ----------
+    // Las reglas están en los atributos HTML de cada campo (required, minlength, maxlength,
+    // pattern, type="email", min, max...) y el mensaje para el usuario en data-error.
+    // El PHP vuelve a validar todo: esto solo evita enviar datos incorrectos.
+    function mensajeDeError(campo) {
+        if (campo.type !== "password" && typeof campo.value === "string" && campo.tagName !== "SELECT") {
+            campo.value = campo.value.trim();
+        }
+        if (campo.checkValidity()) return "";
+        return campo.dataset.error || campo.validationMessage;
+    }
+
+    // Revisa todos los campos de un formulario; marca y enfoca el primero que esté mal
+    function formularioValido(f) {
+        for (const campo of f.querySelectorAll("input, select")) {
+            const mensaje = mensajeDeError(campo);
+            campo.toggleAttribute("aria-invalid", mensaje !== "");
+            if (mensaje !== "") {
+                aviso(mensaje, true);
+                campo.focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
     // ---------- Editar un campo con el lápiz ----------
     document.querySelectorAll(".edit-btn").forEach(function (boton) {
         const campo = boton.previousElementSibling;
@@ -41,7 +70,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         async function guardar() {
             if (campo.readOnly) return;
+            // Se valida mientras el campo todavía es editable (un campo readonly no se valida)
+            const error = campo.value.trim() === original ? "" : mensajeDeError(campo);
             campo.readOnly = true;
+            if (error !== "") {
+                aviso(error, true);
+                campo.value = original;
+                return;
+            }
             if (campo.value === original) return;
 
             const res = await api({
@@ -118,11 +154,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
     document.querySelectorAll("form.form-crud").forEach(function (f) {
+        f.noValidate = true;   // la validación la hace formularioValido() con nuestros mensajes
         f.querySelectorAll("[data-cierra]").forEach(function (boton) {
             boton.addEventListener("click", function () { f.reset(); f.closest("dialog").close(); });
         });
         f.addEventListener("submit", async function (e) {
             e.preventDefault();
+            if (!formularioValido(f)) return;
             const datos = Object.fromEntries(new FormData(f));
             const res = await api(Object.assign({ accion: f.dataset.accion }, datos));
             aviso(res.msg, !res.ok);
@@ -135,6 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("formNuevo");
     const btnNuevo = document.getElementById("btnNuevo");
     if (dialogo && form && btnNuevo) {
+        form.noValidate = true;   // la validación la hace formularioValido() con nuestros mensajes
         btnNuevo.addEventListener("click", function () { dialogo.showModal(); });
         document.getElementById("cancelarNuevo").addEventListener("click", function () {
             form.reset();
@@ -142,6 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
+            if (!formularioValido(form)) return;
             const datos = Object.fromEntries(new FormData(form));
             const res = await api(Object.assign({ accion: "crear" }, datos));
             aviso(res.msg, !res.ok);

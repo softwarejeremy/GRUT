@@ -1,4 +1,10 @@
 <?php
+// =====================================================================
+// Registro de estudiantes. Recibe registro.html por fetch (scripts/validacion_registro.js)
+// y responde en JSON. Guarda en 3 tablas: usuario, estudiante y usuario_rol (rol Estudiante).
+//   Tarea 2 (Jeremy):  si sale bien, el JS manda a iniciar_sesion.html.
+//   Tarea 3 (Gustavo): los errores vuelven en JSON y se muestran en el formulario.
+// =====================================================================
 ob_start();
 ini_set('display_errors', '0');
 header('Content-Type: application/json; charset=utf-8');
@@ -15,6 +21,7 @@ try {
 
     require_once __DIR__ . "/conexion.php";
 
+    // ---------- Validar otra vez en el servidor (el JS se puede saltar) ----------
     $nombre = trim($_POST["nombre"] ?? "");
     $apellido = trim($_POST["apellido"] ?? "");
     $correo = trim($_POST["email"] ?? "");
@@ -28,6 +35,13 @@ try {
         http_response_code(400);
         ob_clean();
         echo json_encode(['success' => false, 'message' => 'Todos los campos son obligatorios.']);
+        exit;
+    }
+
+    if(mb_strlen($nombre) < 2 || mb_strlen($nombre) > 100 || mb_strlen($apellido) < 2 || mb_strlen($apellido) > 100){
+        http_response_code(400);
+        ob_clean();
+        echo json_encode(['success' => false, 'message' => 'El nombre y el apellido deben tener de 2 a 100 caracteres.']);
         exit;
     }
 
@@ -59,6 +73,8 @@ try {
         exit;
     }
 
+    // ---------- Guardar en las 3 tablas: o se guardan todas o ninguna (transacción) ----------
+    // La contraseña se guarda cifrada; para comprobarla se usa password_verify
     $hash = password_hash($contrasena, PASSWORD_DEFAULT);
 
     $conexion->begin_transaction();
@@ -97,6 +113,7 @@ try {
         }
     }
 
+    // Error 1062 = clave única repetida: el correo ya existe
     error_log("Error en procesar_register.php: " . $e->getMessage());
     http_response_code($e instanceof mysqli_sql_exception && $e->getCode() == 1062 ? 409 : 500);
     ob_clean();

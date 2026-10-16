@@ -1,4 +1,7 @@
 <?php
+// Tarea 7 (Asael): pagos y facturas del estudiante con sesión iniciada.
+// Solo se muestran SUS facturas (filtradas por su id_estudiante). El administrador las crea
+// y las marca como pagadas en facturas_administrador.php (tarea 12).
 require_once("php/verificar_sesion.php");
 require_once("php/conexion.php");
 if($_SESSION["rol"] != "Estudiante"){
@@ -72,6 +75,7 @@ function datos_estado($estado){
                 <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                 <li><a class="btn" href="soporte.html">Soporte</a></li>
                 <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                 <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
             </ul>
         </nav>

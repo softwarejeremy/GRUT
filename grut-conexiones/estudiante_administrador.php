@@ -1,5 +1,5 @@
 <?php
-// Tarea 11 (Fabiola): mostrar los estudiantes. Tarea 12: agregar, editar y borrar.
+// Tarea 11 (Fabiola): mostrar los estudiantes. Tarea 12 (Bryan): agregar, editar y borrar.
 // Un estudiante = fila en usuario + fila en estudiante + rol "Estudiante" (igual que php/procesar_register.php).
 require_once("php/admin_comun.php");
 
@@ -7,6 +7,9 @@ require_once("php/admin_comun.php");
 $centros = ["Centro Escolar Cantón Dolores Apulo", "Colegio San Patricio", "Universidad Don Bosco", "Colegio Bautista", "Universidad Tecnológica de El Salvador"];
 $cursos = ["Primaria", "Secundaria", "Bachillerato", "Universitario"];
 
+// ---------- Tarea 12 (Bryan): agregar, editar y borrar ----------
+// scripts/admin_crud.js envía cada cambio por POST (fetch) y aquí se responde en JSON.
+// Todas las consultas son preparadas (?) y el nombre de la columna sale de una lista fija.
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     comprobar_csrf();
 
@@ -25,6 +28,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
         if($campo == "telefono"){
             return telefono_valido($valor) ? "" : "El teléfono debe llevar guion (ej: 7000-0000).";
+        }
+        if($campo == "activo"){
+            // Tarea 13: 1 = puede iniciar sesión, 0 = cuenta desactivada
+            return ($valor === "0" || $valor === "1") ? "" : "Valor no válido.";
         }
         if($campo == "contrasena"){
             return mb_strlen($valor) >= 6 ? "" : "La contraseña debe tener al menos 6 caracteres.";
@@ -80,7 +87,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
             // El nombre de la columna sale de estas listas, nunca del formulario
             $de_estudiante = ["centro_educativo" => "centro_educativo", "curso_educacion" => "curso_educacion"];
-            $de_usuario = ["nombre" => "nombre", "apellido" => "apellido", "correo" => "correo", "telefono" => "telefono"];
+            $de_usuario = ["nombre" => "nombre", "apellido" => "apellido", "correo" => "correo", "telefono" => "telefono", "activo" => "activo"];
             if(isset($de_estudiante[$campo])){
                 $stmt = $conexion->prepare("UPDATE estudiante SET " . $de_estudiante[$campo] . " = ? WHERE id_estudiante = ?");
             } else {
@@ -132,14 +139,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $conexion->rollback();
         }
         if($e instanceof mysqli_sql_exception){
-            responder_error_mysql($e, "Este estudiante tiene rutas o facturas. Bórralas antes de borrar al estudiante.");
+            responder_error_mysql($e, "Este estudiante tiene rutas o facturas. Quítalo de sus rutas (página Rutas) y borra sus facturas antes de borrarlo.");
         }
         error_log("Error en estudiante_administrador.php: " . $e->getMessage());
         responder(false, "No se pudo completar la acción.", 500);
     }
 }
 
-$stmt = $conexion->prepare("SELECT e.id_estudiante, u.nombre, u.apellido, e.centro_educativo, e.curso_educacion, u.correo, u.telefono FROM estudiante e INNER JOIN usuario u ON u.id_usuario = e.id_usuario ORDER BY e.id_estudiante");
+// ---------- Tarea 11 (Fabiola): consultas para mostrar los datos en la página ----------
+$stmt = $conexion->prepare("SELECT e.id_estudiante, u.nombre, u.apellido, e.centro_educativo, e.curso_educacion, u.correo, u.telefono, u.activo FROM estudiante e INNER JOIN usuario u ON u.id_usuario = e.id_usuario ORDER BY e.id_estudiante");
 $stmt->execute();
 $resultado = $stmt->get_result();
 $stmt->close();
@@ -178,6 +186,7 @@ function opciones($lista, $actual){
                 <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                 <li><a class="btn" href="soporte.html">Soporte</a></li>
                 <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                 <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
             </ul>
         </nav>
@@ -190,11 +199,14 @@ function opciones($lista, $actual){
         <section class="panel">
             <h2><span aria-hidden="true">🎓</span> Estudiantes</h2>
 
+            <!-- Tarea 12: botones para agregar y para activar el modo borrar -->
             <div class="panel-actions">
                 <button type="button" class="btn-add" id="btnNuevo">+ Nuevo estudiante</button>
                 <button type="button" class="btn-remove" id="btnBorrar">- Borrar estudiante</button>
             </div>
 
+            <!-- Tarea 11: tabla con los datos de la base (un while = una fila por registro).
+                 Tarea 12: el lápiz edita el campo, las listas se guardan al cambiar y 🗑️ borra la fila. -->
             <div class="table-container" role="region" aria-label="Tabla de estudiantes" tabindex="0">
                 <table class="data-table">
                     <thead>
@@ -205,23 +217,26 @@ function opciones($lista, $actual){
                             <th>Curso de educación</th>
                             <th>Correo</th>
                             <th>Teléfono</th>
+                            <th>Cuenta activa</th>
                             <th class="col-borrar" aria-label="Acciones"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php while($fila = $resultado->fetch_assoc()){ ?>
                         <tr data-id="<?php echo (int)$fila["id_estudiante"]; ?>" data-nombre="al estudiante <?php echo htmlspecialchars($fila["nombre"] . " " . $fila["apellido"]); ?>">
-                            <td><input type="text" data-campo="nombre" value="<?php echo htmlspecialchars($fila["nombre"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar nombre">✏️</button></td>
-                            <td><input type="text" data-campo="apellido" value="<?php echo htmlspecialchars($fila["apellido"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar apellido">✏️</button></td>
+                            <td><input type="text" data-campo="nombre" required minlength="2" maxlength="100" data-error="Nombre y apellido: de 2 a 100 caracteres." value="<?php echo htmlspecialchars($fila["nombre"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar nombre">✏️</button></td>
+                            <td><input type="text" data-campo="apellido" required minlength="2" maxlength="100" data-error="Nombre y apellido: de 2 a 100 caracteres." value="<?php echo htmlspecialchars($fila["apellido"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar apellido">✏️</button></td>
                             <td><select data-campo="centro_educativo" aria-label="Centro educativo"><?php opciones($centros, $fila["centro_educativo"] ?? ""); ?></select></td>
                             <td><select data-campo="curso_educacion" aria-label="Curso de educación"><?php opciones($cursos, $fila["curso_educacion"] ?? ""); ?></select></td>
-                            <td><input type="text" data-campo="correo" value="<?php echo htmlspecialchars($fila["correo"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar correo">✏️</button></td>
-                            <td><input type="text" data-campo="telefono" value="<?php echo htmlspecialchars($fila["telefono"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar teléfono">✏️</button></td>
+                            <td><input type="email" data-campo="correo" required maxlength="150" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" data-error="Escribe un correo válido (ej. nombre@correo.com)." value="<?php echo htmlspecialchars($fila["correo"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar correo">✏️</button></td>
+                            <td><input type="text" data-campo="telefono" required pattern="[2678][0-9]{3}-[0-9]{4}" maxlength="9" data-error="El teléfono debe tener el formato 7000-0000 y empezar con 2, 6, 7 u 8." value="<?php echo htmlspecialchars($fila["telefono"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar teléfono">✏️</button></td>
+                            <!-- Tarea 13: el administrador puede reactivar una cuenta desactivada -->
+                            <td><select data-campo="activo" aria-label="Cuenta activa"><option value="1"<?php echo (int)$fila["activo"] === 1 ? " selected" : ""; ?>>Sí</option><option value="0"<?php echo (int)$fila["activo"] === 1 ? "" : " selected"; ?>>No (desactivada)</option></select></td>
                             <td class="col-borrar"><button type="button" class="del-btn" title="Borrar" aria-label="Borrar estudiante">🗑️</button></td>
                         </tr>
                         <?php } ?>
                         <?php if($resultado->num_rows === 0){ ?>
-                        <tr><td colspan="6">No hay estudiantes registrados</td></tr>
+                        <tr><td colspan="7">No hay estudiantes registrados</td></tr>
                         <?php } ?>
                     </tbody>
                 </table>
@@ -229,22 +244,23 @@ function opciones($lista, $actual){
         </section>
     </main>
 
+    <!-- Tarea 12: formulario para agregar (lo abre el botón "+ Nuevo"); el JS lo valida antes de enviar -->
     <dialog id="dlgNuevo">
         <form id="formNuevo" method="dialog">
             <h3>Nuevo estudiante</h3>
-            <input name="nombre" placeholder="Nombre" maxlength="100" required>
-            <input name="apellido" placeholder="Apellido" maxlength="100" required>
-            <select name="centro_educativo" required>
+            <input name="nombre" placeholder="Nombre" required minlength="2" maxlength="100" data-error="Nombre y apellido: de 2 a 100 caracteres.">
+            <input name="apellido" placeholder="Apellido" required minlength="2" maxlength="100" data-error="Nombre y apellido: de 2 a 100 caracteres.">
+            <select name="centro_educativo" required data-error="Elige un centro educativo.">
                 <option value="" selected disabled>Centro educativo</option>
                 <?php opciones($centros, ""); ?>
             </select>
-            <select name="curso_educacion" required>
+            <select name="curso_educacion" required data-error="Elige un curso de educación.">
                 <option value="" selected disabled>Curso de educación</option>
                 <?php opciones($cursos, ""); ?>
             </select>
-            <input name="correo" type="email" placeholder="Correo" maxlength="150" required>
-            <input name="telefono" placeholder="Teléfono (ej. 7000-0000)" pattern="[2678][0-9]{3}-[0-9]{4}" required>
-            <input name="contrasena" type="password" placeholder="Contraseña (mín. 6)" minlength="6" required autocomplete="new-password">
+            <input name="correo" type="email" placeholder="Correo" required maxlength="150" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" data-error="Escribe un correo válido (ej. nombre@correo.com).">
+            <input name="telefono" placeholder="Teléfono (ej. 7000-0000)" required pattern="[2678][0-9]{3}-[0-9]{4}" maxlength="9" data-error="El teléfono debe tener el formato 7000-0000 y empezar con 2, 6, 7 u 8.">
+            <input name="contrasena" type="password" placeholder="Contraseña (mín. 6)" minlength="6" required autocomplete="new-password" data-error="La contraseña debe tener al menos 6 caracteres.">
             <menu>
                 <button type="button" id="cancelarNuevo">Cancelar</button>
                 <button type="submit">Guardar</button>
@@ -261,6 +277,7 @@ function opciones($lista, $actual){
         <h2>X: @GRUT_updates</h2>
     </footer>
 
+    <!-- Tarea 12: JavaScript que valida y envía los cambios al PHP de esta misma página -->
     <script src="scripts/admin_crud.js"></script>
 </body>
 </html>

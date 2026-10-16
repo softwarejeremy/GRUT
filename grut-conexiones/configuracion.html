@@ -21,6 +21,7 @@
                 <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                 <li><a class="btn" href="soporte.html">Soporte</a></li>
                 <li><a class="btn active" href="configuracion.html" aria-current="page">Configuración</a></li>
+                <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                 <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
             </ul>
         </nav>
@@ -66,6 +67,7 @@
                 </div>
             </section>
 
+            <!-- Tarea 13 (Andrea): tamaño de texto (arriba) y modo de color. Se guardan con scripts/configuracion.js -->
             <section class="theme-settings" aria-labelledby="theme-settings-title">
                 <h3 id="theme-settings-title">Modo de color</h3>
                 <div class="theme-options">
@@ -85,9 +87,11 @@
             <section class="account-actions" aria-labelledby="account-actions-title">
                 <h3 id="account-actions-title">Salir de la cuenta:</h3>
                 <div class="action-buttons">
+                    <!-- Tarea 13 (Andrea): desactivar la cuenta (pide confirmación en scripts/configuracion.js) -->
                     <form id="form-desactivar" method="POST" action="php/desactivar_cuenta.php" style="display: contents;">
                         <button type="submit">Desactivar cuenta</button>
                     </form>
+                    <!-- Tarea 1 (Jeremy): cerrar sesión -->
                     <a href="php/cerrar_sesion.php" class="log_out">Cerrar Sesión</a>
                 </div>
             </section>

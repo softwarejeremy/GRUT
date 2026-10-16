@@ -1,14 +1,29 @@
 <?php
+// Panel del estudiante.
+// Tarea 8 (Fabiola): sección "Usuario" con el formulario para editar el perfil.
+// Tarea 5 (Gustavo): sección "Rutas" con las rutas reales del estudiante.
 require_once("php/verificar_sesion.php");
 require_once("php/conexion.php");
 if($_SESSION["rol"] != "Estudiante"){
     header("Location: iniciar_sesion.html");
     exit;
 }
+
+// ---------- Tarea 8: datos del perfil ----------
 $stmt = $conexion->prepare("SELECT u.id_usuario, u.nombre, u.apellido, u.correo, u.telefono, e.curso_educacion, e.centro_educativo FROM usuario u INNER JOIN estudiante e ON e.id_usuario = u.id_usuario WHERE u.id_usuario = ?");
 $stmt->bind_param("i", $_SESSION["id_usuario"]);
 $stmt->execute();
 $datos = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+// ---------- Tarea 5: rutas del estudiante ----------
+// estudiante -> estudiante_ruta -> rutas -> conductor -> usuario (nombre del conductor)
+// y rutas -> ruta_bus -> buses (placa). Se parte del id_usuario de la sesión.
+// Si una ruta tiene varios buses, sus placas salen juntas ("P-101, P-102").
+$stmt = $conexion->prepare("SELECT r.id_ruta, r.nombre, r.descripcion, uc.nombre AS nombre_conductor, uc.apellido AS apellido_conductor, GROUP_CONCAT(DISTINCT b.placa ORDER BY b.placa SEPARATOR ', ') AS placas, COUNT(DISTINCT rp.id_ruta_parada) AS total_paradas FROM estudiante e INNER JOIN estudiante_ruta er ON er.id_estudiante = e.id_estudiante INNER JOIN rutas r ON r.id_ruta = er.id_ruta LEFT JOIN conductor c ON c.id_conductor = r.id_conductor LEFT JOIN usuario uc ON uc.id_usuario = c.id_usuario LEFT JOIN ruta_bus rb ON rb.id_ruta = r.id_ruta LEFT JOIN buses b ON b.id_bus = rb.id_bus LEFT JOIN ruta_parada rp ON rp.id_ruta = r.id_ruta WHERE e.id_usuario = ? GROUP BY r.id_ruta, r.nombre, r.descripcion, uc.nombre, uc.apellido ORDER BY r.nombre");
+$stmt->bind_param("i", $_SESSION["id_usuario"]);
+$stmt->execute();
+$rutas = $stmt->get_result();
 $stmt->close();
 ?>
 <!DOCTYPE html>
@@ -20,11 +35,6 @@ $stmt->close();
     <script src="scripts/preferencias.js"></script>
     <link rel="stylesheet" href="css/estilos_globales.css">
     <link rel="stylesheet" href="css/preferencias.css">
-    <style>
-        .mensaje-exito, .mensaje-error { padding: 12px 16px; border-radius: 8px; margin: 0 0 16px; font-weight: bold; }
-        .mensaje-exito { background: #d4edda; color: #155724; }
-        .mensaje-error { background: #f8d7da; color: #721c24; }
-    </style>
 </head>
 <body class="page-inicio-estudiante">
 
@@ -40,6 +50,7 @@ $stmt->close();
                     <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                     <li><a class="btn" href="soporte.html">Soporte</a></li>
                     <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                    <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                     <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
                 </ul>
             </nav>
@@ -58,11 +69,14 @@ $stmt->close();
             <?php unset($_SESSION["perfil_msg"]); ?>
         <?php endif; ?>
 
-        <!-- SECCIÓN 1: Usuario con Inputs de Formulario -->
+        <!-- SECCIÓN 1 (tarea 8): datos del usuario. "Editar información" habilita los campos
+             y scripts/validacion_perfil.js los valida antes de enviarlos a php/actualizar_perfil.php -->
         <section class="card-wrapper">
             <h2><span aria-hidden="true">👤</span> Usuario</h2>
             <div class="inner-card">
-                <form class="user-grid" id="form-perfil" method="POST" action="php/actualizar_perfil.php">
+                <!-- Aquí se muestran los errores de la validación con JavaScript -->
+                <p class="mensaje-error" id="aviso-perfil" role="alert" hidden></p>
+                <form class="user-grid" id="form-perfil" method="POST" action="php/actualizar_perfil.php" data-perfil>
                     <!-- Nombre -->
                     <div class="input-group">
                         <label for="nombre">Nombre</label>
@@ -99,7 +113,7 @@ $stmt->close();
                     <div class="input-group">
                         <label for="telefono">Teléfono</label>
                         <div class="field-with-icon">
-                            <input type="tel" id="telefono" name="telefono" placeholder="" value="<?php echo htmlspecialchars($datos["telefono"]); ?>" maxlength="9" required readonly>
+                            <input type="tel" id="telefono" name="telefono" placeholder="" value="<?php echo htmlspecialchars($datos["telefono"]); ?>" maxlength="9" pattern="[2678][0-9]{3}-[0-9]{4}" title="Con guion, ej: 7000-0000" required readonly>
                         </div>
                     </div>
 
@@ -126,71 +140,33 @@ $stmt->close();
             </div>
         </section>
 
-        <!-- SECCIÓN 2: Rutas -->
+        <!-- SECCIÓN 2: Rutas (tarea 5). Solo se consultan: las asigna el administrador. -->
         <section class="card-wrapper">
             <h2><span aria-hidden="true">🚌</span> Rutas</h2>
             <div class="inner-card">
+                <?php if($rutas->num_rows === 0){ ?>
+                    <p class="sin-rutas">Aún no tienes rutas asignadas. Cuando el administrador te inscriba en una ruta, aparecerá aquí.</p>
+                <?php } else { ?>
                 <div class="routes-grid">
-                    
-                    <!-- Tarjeta Ruta 15 -->
+                    <?php while($fila = $rutas->fetch_assoc()){ ?>
                     <div class="route-card-item">
-                        <h3>RUTA 15</h3>
+                        <h3><?php echo htmlspecialchars(mb_strtoupper($fila["nombre"])); ?></h3>
                         <div class="route-info-group">
                             <div class="route-info-box">
-                                <p><strong>Conductor:</strong> Juan Pérez</p>
-                                <p><strong>Bus:</strong> ABC-123</p>
-                                <p><strong>Estado:</strong> Activa</p>
+                                <p><strong>Conductor:</strong> <?php echo htmlspecialchars($fila["nombre_conductor"] !== null ? $fila["nombre_conductor"] . " " . $fila["apellido_conductor"] : "Sin asignar"); ?></p>
+                                <p><strong>Bus:</strong> <?php echo htmlspecialchars($fila["placas"] ?? "Sin asignar"); ?></p>
+                                <p><strong>Paradas:</strong> <?php echo (int)$fila["total_paradas"]; ?></p>
                             </div>
-
                         </div>
-                        <a href="ruta.html" class="btn-details">Ver detalles...</a>
+                        <a href="ruta.php?id=<?php echo (int)$fila["id_ruta"]; ?>" class="btn-details">Ver detalles...</a>
                     </div>
-
-                    <!-- Tarjeta Ruta 41-A -->
-                    <div class="route-card-item">
-                        <h3>RUTA 41-A</h3>
-                        <div class="route-info-group">
-                            <div class="route-info-box">
-                                <p><strong>Conductor:</strong> María Campos</p>
-                                <p><strong>Bus:</strong> DEF-456</p>
-                                <p><strong>Estado:</strong> Activa</p>
-                            </div>
-
-                        </div>
-                        <a href="ruta.html" class="btn-details">Ver detalles...</a>
-                    </div>
-
-                    <!-- Tarjeta Ruta 41-D -->
-                    <div class="route-card-item">
-                        <h3>RUTA 41-D</h3>
-                        <div class="route-info-group">
-                            <div class="route-info-box">
-                                <p><strong>Conductor:</strong> José Aguilar</p>
-                                <p><strong>Bus:</strong> GHI-789</p>
-                                <p><strong>Estado:</strong> Inactiva</p>
-                            </div>
-
-                        </div>
-                        <a href="ruta.html" class="btn-details">Ver detalles...</a>
-                    </div>
-
-                <div>
-                    <a class="btn">Añadir  otra nueva ruta +</a> 
+                    <?php } ?>
                 </div>
-
-                <div>
-                    <a class="btn">Eliminar una ruta -</a>
-                </div>
-
-                    </div>
-
-                </div>
-
-                <!-- Botón Añadir RUTA -->
+                <?php } ?>
             </div>
         </section>
 
-        <!-- SECCIÓN 3: Pagos y facturas -->
+        <!-- SECCIÓN 3: enlace a pagos.php (tarea 7) -->
         <section class="card-wrapper">
             <h2><span aria-hidden="true">💳</span> Pagos y facturas</h2>
             <div class="inner-card payments-summary-card">
@@ -210,25 +186,7 @@ $stmt->close();
         </div>
     </footer>
 
-    <script>
-    // Primer clic: habilita los campos. Segundo clic ("Guardar"): valida y envía.
-    const form = document.getElementById("form-perfil");
-    const btn = document.getElementById("btn-editar");
-    const editables = ["nombre", "apellido", "curso", "telefono", "centro"]
-        .map(id => document.getElementById(id));
-    let editando = false;
-
-    btn.addEventListener("click", () => {
-        if (!editando) {
-            editables.forEach(i => i.removeAttribute("readonly"));
-            btn.textContent = "Guardar";
-            editando = true;
-            editables[0].focus();
-        } else if (form.reportValidity()) {
-            form.submit();
-        }
-    });
-    </script>
+    <script src="scripts/validacion_perfil.js"></script>
 
 </body>
 </html>

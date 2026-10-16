@@ -18,6 +18,7 @@ if(!$datos){
     die("Tu cuenta de conductor no está completa: falta tu fila en la tabla conductor. Avisa a un administrador.");
 }
 
+// ---------- Ruta asignada: rutas (por id_conductor) -> ruta_bus -> buses ----------
 // Rutas asignadas al conductor (rutas.id_conductor) con su bus (ruta_bus -> buses)
 $stmt = $conexion->prepare("SELECT r.id_ruta, r.nombre, r.descripcion, b.placa, b.capacidad, b.estado AS estado_bus FROM rutas r LEFT JOIN ruta_bus rb ON rb.id_ruta = r.id_ruta LEFT JOIN buses b ON b.id_bus = rb.id_bus WHERE r.id_conductor = ? ORDER BY r.id_ruta");
 $stmt->bind_param("i", $datos["id_conductor"]);
@@ -105,6 +106,7 @@ foreach($rutas as $id_ruta => $ruta){
                     <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                     <li><a class="btn" href="soporte.html">Soporte</a></li>
                     <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                    <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                     <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
                 </ul>
             </nav>
@@ -115,7 +117,7 @@ foreach($rutas as $id_ruta => $ruta){
         <!-- Título principal -->
         <h1 class="welcome-title">¡Bienvenido, <?php echo htmlspecialchars($datos["nombre"]); ?>!</h1>
 
-        <!-- Mensaje de éxito o error al guardar el perfil -->
+        <!-- Tarea 9: mensaje de éxito o error al guardar el perfil (php/conductor_editar_perfil.php) -->
         <?php if(!empty($_SESSION["perfil_msg"])){ ?>
             <p class="mensaje-<?php echo htmlspecialchars($_SESSION["perfil_msg"]["tipo"]); ?>" role="alert">
                 <?php echo htmlspecialchars($_SESSION["perfil_msg"]["texto"]); ?>
@@ -125,11 +127,14 @@ foreach($rutas as $id_ruta => $ruta){
 
             <section class="panel">
 
+                <!-- Tarea 9: datos personales (usuario + conductor). Se editan con scripts/validacion_perfil.js -->
                 <h3 class="panel-encabezado"><span aria-hidden="true">👤</span> Información de usuario</h3>
 
                 <div class="panel-cuerpo">
 
-                 <form id="form-conductor" method="POST" action="php/conductor_editar_perfil.php">
+                 <!-- Aquí se muestran los errores de la validación con JavaScript -->
+                 <p class="mensaje-error" id="aviso-perfil" role="alert" hidden></p>
+                 <form id="form-conductor" method="POST" action="php/conductor_editar_perfil.php" data-perfil>
 
                     <div class="fila-campos">
                         <div class="campo campo-editable">
@@ -181,9 +186,7 @@ foreach($rutas as $id_ruta => $ruta){
 
                     <br>
                 <div>
-                    <button type="button" id="btn-editar" style="border:none; background:none;"><a class="btn">Editar información</a></button>
-
-                    <button type="submit" id="btn-guardar" style="border:none; background:none; display:none"><a class="btn">Guardar cambios</a></button>
+                    <button type="button" class="btn" id="btn-editar">Editar información</button>
                 </div>
 
 </form>
@@ -192,6 +195,7 @@ foreach($rutas as $id_ruta => $ruta){
 
             <section class="panel">
 
+                <!-- Tarea 9: ruta, paradas en orden con horario, centros educativos, bus y capacidad -->
                 <h3 class="panel-encabezado"><span aria-hidden="true">🚦</span> Seguimiento e información de rutas</h3>
  <!-- aria-hidden es para ocultar el icono en pantallas de lectura -->
                 <div class="panel-cuerpo">
@@ -245,6 +249,7 @@ foreach($rutas as $id_ruta => $ruta){
 
             <section class="panel">
 
+                <!-- Tarea 9: enlace a Google Maps con las coordenadas de las paradas -->
                 <h3 class="panel-encabezado"><span aria-hidden="true">🗺️</span> Ver ruta</h3>
 
                 <div class="panel-cuerpo ver-ruta">
@@ -270,7 +275,7 @@ foreach($rutas as $id_ruta => $ruta){
                         <h4><?php echo htmlspecialchars($ruta["nombre"]); ?></h4>
                         <?php if($ruta["url_mapa"] != ""){ ?>
                         <!-- target="_blank" abre una pestaña nueva; rel="noopener" evita que esa página controle la nuestra -->
-                        <a class="mapa-preview" href="<?php echo htmlspecialchars($ruta["url_mapa"]); ?>" target="_blank" rel="noopener">Visualizar en Google Maps</a>
+                        <a href="<?php echo htmlspecialchars($ruta["url_mapa"]); ?>" target="_blank" rel="noopener">Visualizar en Google Maps</a>
                         <?php } else { ?>
                         <p>Las paradas de esta ruta todavía no tienen coordenadas para mostrar el mapa.</p>
                         <?php } ?>
@@ -294,21 +299,7 @@ foreach($rutas as $id_ruta => $ruta){
             </p>
         </footer>
 
-<!-- JAVA SCRIPT -->
- <script>
-    // Primer clic: habilita los campos. "Guardar cambios" envía el formulario.
-    const btnEditar = document.getElementById("btn-editar");
-    const btnGuardar = document.getElementById("btn-guardar");
-    const camposEditables = ["nombre", "apellido", "num-licencia", "telefono"];
-
-    btnEditar.addEventListener("click", function() {
-        camposEditables.forEach(function(id) {
-            document.getElementById(id).removeAttribute("readonly");
-        });
-        document.getElementById("nombre").focus();
-        btnEditar.style.display = "none";
-        btnGuardar.style.display = "inline-block";
-    });
-</script>
+        <!-- Editar y validar el perfil (tareas 8 y 9) -->
+        <script src="scripts/validacion_perfil.js"></script>
     </body>
 </html>

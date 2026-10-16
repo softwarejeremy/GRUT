@@ -1,4 +1,6 @@
 <?php
+// Tarea 8 (Fabiola): guardar los cambios del perfil del estudiante.
+// Lo envía el formulario de inicio_estudiante.php; el mensaje vuelve en $_SESSION["perfil_msg"].
 session_start();
 require_once("conexion.php");
 

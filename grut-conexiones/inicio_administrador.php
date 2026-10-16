@@ -1,4 +1,6 @@
 <?php
+// Tarea 10 (Fabiola): panel de inicio del administrador.
+// Muestra sus datos de "usuario" y los enlaces a las 6 páginas de gestión (tareas 11 y 12).
 require_once("php/verificar_sesion.php");
 require_once("php/conexion.php");
 if($_SESSION["rol"] != "Administrador"){
@@ -38,6 +40,7 @@ if(!$datos){
                 <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                 <li><a class="btn" href="soporte.html">Soporte</a></li>
                 <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                 <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
             </ul>
         </nav>

@@ -1,11 +1,14 @@
 <?php
-// Tarea 11 (Fabiola): mostrar paradas, recorridos y horarios. Tarea 12: agregar, editar y borrar.
+// Tarea 11 (Fabiola): mostrar paradas, recorridos y horarios. Tarea 12 (Bryan): agregar, editar y borrar.
 // Tablas: paradas; ruta_parada (qué parada va en qué ruta y en qué orden); horarios (días y horas).
 require_once("php/admin_comun.php");
 
 $dias = ["lunes" => "Lunes", "martes" => "Martes", "miercoles" => "Miércoles", "jueves" => "Jueves",
          "viernes" => "Viernes", "sabado" => "Sábado", "domingo" => "Domingo"];
 
+// ---------- Tarea 12 (Bryan): agregar, editar y borrar ----------
+// scripts/admin_crud.js envía cada cambio por POST (fetch) y aquí se responde en JSON.
+// Todas las consultas son preparadas (?) y el nombre de la columna sale de una lista fija.
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     comprobar_csrf();
 
@@ -156,6 +159,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 }
 
+// ---------- Tarea 11 (Fabiola): consultas para mostrar los datos en la página ----------
 $stmt = $conexion->prepare("SELECT id_parada, nombre, direccion, latitud, longitud FROM paradas ORDER BY nombre");
 $stmt->execute();
 $paradas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -205,6 +209,7 @@ $stmt->close();
                 <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                 <li><a class="btn" href="soporte.html">Soporte</a></li>
                 <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                 <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
             </ul>
         </nav>
@@ -217,11 +222,14 @@ $stmt->close();
         <section class="panel">
             <h2><span aria-hidden="true">🚏</span> Paradas</h2>
 
+            <!-- Tarea 12: botones para agregar y para activar el modo borrar -->
             <div class="panel-actions">
                 <button type="button" class="btn-add" id="btnNuevo">+ Nueva parada</button>
                 <button type="button" class="btn-remove" id="btnBorrar">- Borrar parada</button>
             </div>
 
+            <!-- Tarea 11: tabla con los datos de la base (un while = una fila por registro).
+                 Tarea 12: el lápiz edita el campo, las listas se guardan al cambiar y 🗑️ borra la fila. -->
             <div class="table-container" role="region" aria-label="Tabla de paradas" tabindex="0">
                 <table class="data-table">
                     <thead>
@@ -236,10 +244,10 @@ $stmt->close();
                     <tbody>
                         <?php foreach($paradas as $fila){ ?>
                         <tr data-id="<?php echo (int)$fila["id_parada"]; ?>" data-nombre="la parada <?php echo htmlspecialchars($fila["nombre"]); ?>">
-                            <td><input type="text" data-campo="nombre" value="<?php echo htmlspecialchars($fila["nombre"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar nombre">✏️</button></td>
-                            <td><input type="text" data-campo="direccion" value="<?php echo htmlspecialchars($fila["direccion"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar dirección">✏️</button></td>
-                            <td><input type="text" data-campo="latitud" value="<?php echo htmlspecialchars($fila["latitud"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar latitud">✏️</button></td>
-                            <td><input type="text" data-campo="longitud" value="<?php echo htmlspecialchars($fila["longitud"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar longitud">✏️</button></td>
+                            <td><input type="text" data-campo="nombre" required minlength="2" maxlength="100" data-error="El nombre debe tener de 2 a 100 caracteres." value="<?php echo htmlspecialchars($fila["nombre"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar nombre">✏️</button></td>
+                            <td><input type="text" data-campo="direccion" maxlength="255" data-error="La dirección no puede pasar de 255 caracteres." value="<?php echo htmlspecialchars($fila["direccion"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar dirección">✏️</button></td>
+                            <td><input type="number" step="any" min="-90" max="90" data-campo="latitud" data-error="La latitud debe ser un número entre -90 y 90." value="<?php echo htmlspecialchars($fila["latitud"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar latitud">✏️</button></td>
+                            <td><input type="number" step="any" min="-180" max="180" data-campo="longitud" data-error="La longitud debe ser un número entre -180 y 180." value="<?php echo htmlspecialchars($fila["longitud"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar longitud">✏️</button></td>
                             <td class="col-borrar"><button type="button" class="del-btn" title="Borrar" aria-label="Borrar parada">🗑️</button></td>
                         </tr>
                         <?php } ?>
@@ -251,6 +259,7 @@ $stmt->close();
             </div>
         </section>
 
+        <!-- Tareas 11 y 12: recorridos (ruta_parada) y horarios. Esto es lo que ven el estudiante (ruta.php) y el conductor. -->
         <section class="panel">
             <h2><span aria-hidden="true">🕐</span> Recorridos y horarios</h2>
 
@@ -274,7 +283,7 @@ $stmt->close();
                         <tr data-id="<?php echo (int)$id; ?>" data-nombre="la parada <?php echo htmlspecialchars($r["parada"]); ?> de la ruta <?php echo htmlspecialchars($r["ruta"]); ?> (con sus horarios)">
                             <td class="texto-secundario"><?php echo htmlspecialchars($r["ruta"]); ?></td>
                             <td class="texto-secundario"><?php echo htmlspecialchars($r["parada"]); ?></td>
-                            <td><input type="number" min="1" data-campo="orden" value="<?php echo (int)$r["orden"]; ?>" readonly><button type="button" class="edit-btn" aria-label="Editar orden">✏️</button></td>
+                            <td><input type="number" min="1" step="1" required data-campo="orden" data-error="El orden debe ser un número entero desde 1." value="<?php echo (int)$r["orden"]; ?>" readonly><button type="button" class="edit-btn" aria-label="Editar orden">✏️</button></td>
                             <td class="texto-secundario"><?php echo $r["horarios"] ? htmlspecialchars(implode(" · ", $r["horarios"])) : "Sin horario"; ?></td>
                             <td class="col-borrar"><button type="button" class="del-btn" title="Quitar de la ruta" aria-label="Quitar parada de la ruta">🗑️</button></td>
                         </tr>
@@ -288,13 +297,14 @@ $stmt->close();
         </section>
     </main>
 
+    <!-- Tarea 12: formulario para agregar (lo abre el botón "+ Nuevo"); el JS lo valida antes de enviar -->
     <dialog id="dlgNuevo">
         <form id="formNuevo" method="dialog">
             <h3>Nueva parada</h3>
-            <input name="nombre" placeholder="Nombre de la parada" maxlength="100" required>
-            <input name="direccion" placeholder="Dirección" maxlength="255">
-            <input name="latitud" placeholder="Latitud (opcional, ej. 13.6929)">
-            <input name="longitud" placeholder="Longitud (opcional, ej. -89.2182)">
+            <input name="nombre" placeholder="Nombre de la parada" required minlength="2" maxlength="100" data-error="El nombre debe tener de 2 a 100 caracteres.">
+            <input name="direccion" placeholder="Dirección" maxlength="255" data-error="La dirección no puede pasar de 255 caracteres.">
+            <input name="latitud" type="number" step="any" min="-90" max="90" placeholder="Latitud (opcional, ej. 13.6929)" data-error="La latitud debe ser un número entre -90 y 90.">
+            <input name="longitud" type="number" step="any" min="-180" max="180" placeholder="Longitud (opcional, ej. -89.2182)" data-error="La longitud debe ser un número entre -180 y 180.">
             <menu>
                 <button type="button" id="cancelarNuevo">Cancelar</button>
                 <button type="submit">Guardar</button>
@@ -305,29 +315,29 @@ $stmt->close();
     <dialog id="dlgRecorrido">
         <form class="form-crud" data-accion="crear_recorrido" method="dialog">
             <h3>Asignar parada a una ruta</h3>
-            <select name="id_ruta" required>
+            <select name="id_ruta" required data-error="Elige la ruta.">
                 <option value="" selected disabled>Ruta</option>
                 <?php foreach($rutas as $r){ ?>
                 <option value="<?php echo (int)$r["id_ruta"]; ?>"><?php echo htmlspecialchars($r["nombre"]); ?></option>
                 <?php } ?>
             </select>
-            <select name="id_parada" required>
+            <select name="id_parada" required data-error="Elige la parada.">
                 <option value="" selected disabled>Parada</option>
                 <?php foreach($paradas as $p){ ?>
                 <option value="<?php echo (int)$p["id_parada"]; ?>"><?php echo htmlspecialchars($p["nombre"]); ?></option>
                 <?php } ?>
             </select>
-            <input name="orden" type="number" min="1" placeholder="Orden en la ruta (1 = primera)" required>
-            <select name="dia_semana" required>
+            <input name="orden" type="number" min="1" step="1" placeholder="Orden en la ruta (1 = primera)" required data-error="El orden debe ser un número entero desde 1.">
+            <select name="dia_semana" required data-error="Elige un día.">
                 <option value="" selected disabled>Día</option>
                 <?php foreach($dias as $valor => $texto){ ?>
                 <option value="<?php echo $valor; ?>"><?php echo $texto; ?></option>
                 <?php } ?>
             </select>
             <label for="rec-salida">Hora de salida</label>
-            <input name="hora_salida" id="rec-salida" type="time" required>
+            <input name="hora_salida" id="rec-salida" type="time" required data-error="Escribe la hora de salida.">
             <label for="rec-llegada">Hora de llegada</label>
-            <input name="hora_llegada" id="rec-llegada" type="time" required>
+            <input name="hora_llegada" id="rec-llegada" type="time" required data-error="Escribe la hora de llegada.">
             <menu>
                 <button type="button" data-cierra>Cancelar</button>
                 <button type="submit">Guardar</button>
@@ -344,6 +354,7 @@ $stmt->close();
         <h2>X: @GRUT_updates</h2>
     </footer>
 
+    <!-- Tarea 12: JavaScript que valida y envía los cambios al PHP de esta misma página -->
     <script src="scripts/admin_crud.js"></script>
 </body>
 </html>

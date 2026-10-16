@@ -1,5 +1,6 @@
 <?php
-
+// Conexión a MySQL (base transito_escolar). Todas las páginas usan la variable $conexion.
+// MYSQLI_REPORT_STRICT hace que los errores de MySQL lancen excepciones (try/catch).
 $host = "localhost";
 $usuario = "root";
 $password = "";

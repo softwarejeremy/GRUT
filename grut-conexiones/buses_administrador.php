@@ -4,6 +4,9 @@ require_once("php/admin_comun.php");
 
 $estados = ["activo", "mantenimiento", "inactivo"];
 
+// ---------- Tarea 12 (Bryan): agregar, editar y borrar ----------
+// scripts/admin_crud.js envía cada cambio por POST (fetch) y aquí se responde en JSON.
+// Todas las consultas son preparadas (?) y el nombre de la columna sale de una lista fija.
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     comprobar_csrf();
 
@@ -70,6 +73,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 }
 
+// ---------- Tarea 11 (Fabiola): consultas para mostrar los datos en la página ----------
 $stmt = $conexion->prepare("SELECT id_bus, placa, capacidad, estado FROM buses ORDER BY id_bus");
 $stmt->execute();
 $resultado = $stmt->get_result();
@@ -98,6 +102,7 @@ $stmt->close();
                 <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                 <li><a class="btn" href="soporte.html">Soporte</a></li>
                 <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                 <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
             </ul>
         </nav>
@@ -110,11 +115,14 @@ $stmt->close();
         <section class="panel">
             <h2><span aria-hidden="true">🚍</span> Buses</h2>
 
+            <!-- Tarea 12: botones para agregar y para activar el modo borrar -->
             <div class="panel-actions">
                 <button type="button" class="btn-add" id="btnNuevo">+ Nuevo bus</button>
                 <button type="button" class="btn-remove" id="btnBorrar">- Borrar bus</button>
             </div>
 
+            <!-- Tarea 11: tabla con los datos de la base (un while = una fila por registro).
+                 Tarea 12: el lápiz edita el campo, las listas se guardan al cambiar y 🗑️ borra la fila. -->
             <div class="table-container" role="region" aria-label="Tabla de buses" tabindex="0">
                 <table class="data-table">
                     <thead>
@@ -128,8 +136,8 @@ $stmt->close();
                     <tbody>
                         <?php while($fila = $resultado->fetch_assoc()){ ?>
                         <tr data-id="<?php echo (int)$fila["id_bus"]; ?>" data-nombre="el bus <?php echo htmlspecialchars($fila["placa"]); ?>">
-                            <td><input type="text" data-campo="placa" value="<?php echo htmlspecialchars($fila["placa"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar placa">✏️</button></td>
-                            <td><input type="number" data-campo="capacidad" min="1" max="100" value="<?php echo htmlspecialchars($fila["capacidad"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar capacidad">✏️</button></td>
+                            <td><input type="text" data-campo="placa" required minlength="3" maxlength="20" data-error="La placa debe tener de 3 a 20 caracteres." value="<?php echo htmlspecialchars($fila["placa"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar placa">✏️</button></td>
+                            <td><input type="number" data-campo="capacidad" required min="1" max="100" step="1" data-error="La capacidad debe ser un número entero entre 1 y 100." value="<?php echo htmlspecialchars($fila["capacidad"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar capacidad">✏️</button></td>
                             <td>
                                 <select data-campo="estado" aria-label="Estado del bus">
                                     <?php foreach($estados as $opcion){ ?>
@@ -149,11 +157,12 @@ $stmt->close();
         </section>
     </main>
 
+    <!-- Tarea 12: formulario para agregar (lo abre el botón "+ Nuevo"); el JS lo valida antes de enviar -->
     <dialog id="dlgNuevo">
         <form id="formNuevo" method="dialog">
             <h3>Nuevo bus</h3>
-            <input name="placa" placeholder="Placa (ej. SJB-011)" maxlength="20" required>
-            <input name="capacidad" type="number" min="1" max="100" placeholder="Capacidad" required>
+            <input name="placa" placeholder="Placa (ej. AB-106-789)" required minlength="3" maxlength="20" data-error="La placa debe tener de 3 a 20 caracteres.">
+            <input name="capacidad" type="number" min="1" max="100" step="1" placeholder="Capacidad" required data-error="La capacidad debe ser un número entero entre 1 y 100.">
             <select name="estado" required>
                 <?php foreach($estados as $opcion){ ?>
                 <option value="<?php echo $opcion; ?>"><?php echo ucfirst($opcion); ?></option>
@@ -175,6 +184,7 @@ $stmt->close();
         <h2>X: @GRUT_updates</h2>
     </footer>
 
+    <!-- Tarea 12: JavaScript que valida y envía los cambios al PHP de esta misma página -->
     <script src="scripts/admin_crud.js"></script>
 </body>
 </html>

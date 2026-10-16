@@ -1,9 +1,12 @@
 <?php
-// Tarea 11 (Fabiola): mostrar las facturas. Tarea 12: agregar, editar, borrar y "Marcar como pagada".
+// Tarea 11 (Fabiola): mostrar las facturas. Tarea 12 (Bryan): agregar, editar, borrar y "Marcar como pagada".
 require_once("php/admin_comun.php");
 
 $estados = ["pendiente", "pagado", "vencido"];
 
+// ---------- Tarea 12 (Bryan): agregar, editar y borrar ----------
+// scripts/admin_crud.js envía cada cambio por POST (fetch) y aquí se responde en JSON.
+// Todas las consultas son preparadas (?) y el nombre de la columna sale de una lista fija.
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     comprobar_csrf();
 
@@ -85,6 +88,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 }
 
+// ---------- Tarea 11 (Fabiola): consultas para mostrar los datos en la página ----------
 $stmt = $conexion->prepare("SELECT f.id_factura, f.id_estudiante, u.nombre, u.apellido, f.descripcion, f.fecha_emision, f.fecha_vencimiento, f.monto, f.estado_pago FROM facturas f INNER JOIN estudiante e ON e.id_estudiante = f.id_estudiante INNER JOIN usuario u ON u.id_usuario = e.id_usuario ORDER BY f.id_factura");
 $stmt->execute();
 $resultado = $stmt->get_result();
@@ -118,6 +122,7 @@ $stmt->close();
                 <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                 <li><a class="btn" href="soporte.html">Soporte</a></li>
                 <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                 <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
             </ul>
         </nav>
@@ -130,11 +135,14 @@ $stmt->close();
         <section class="panel invoice-panel">
             <h2>Facturas</h2>
 
+            <!-- Tarea 12: botones para agregar y para activar el modo borrar -->
             <div class="panel-actions">
                 <button type="button" class="btn-add" id="btnNuevo">+ Nueva factura</button>
                 <button type="button" class="btn-remove" id="btnBorrar">- Borrar factura</button>
             </div>
 
+            <!-- Tarea 11: tabla con los datos de la base (un while = una fila por registro).
+                 Tarea 12: el lápiz edita el campo, las listas se guardan al cambiar y 🗑️ borra la fila. -->
             <div class="table-container" role="region" aria-label="Tabla de facturas" tabindex="0">
                 <table class="invoice-table">
                     <thead>
@@ -163,10 +171,10 @@ $stmt->close();
                         <tr data-id="<?php echo (int)$fila["id_factura"]; ?>" data-nombre="la factura <?php echo (int)$fila["id_factura"]; ?>">
                             <td><?php echo htmlspecialchars($fila["id_factura"]); ?></td>
                             <td><?php echo htmlspecialchars($fila["nombre"] . " " . $fila["apellido"]); ?></td>
-                            <td><input type="text" data-campo="descripcion" value="<?php echo htmlspecialchars($fila["descripcion"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar descripción">✏️</button></td>
+                            <td><input type="text" data-campo="descripcion" maxlength="255" data-error="La descripción no puede pasar de 255 caracteres." value="<?php echo htmlspecialchars($fila["descripcion"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar descripción">✏️</button></td>
                             <td><?php echo htmlspecialchars(date("d/m/Y", strtotime($fila["fecha_emision"]))); ?></td>
                             <td><input type="date" data-campo="fecha_vencimiento" value="<?php echo htmlspecialchars($fila["fecha_vencimiento"] ?? ""); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar vencimiento">✏️</button></td>
-                            <td><input type="number" step="0.01" min="0.01" data-campo="monto" value="<?php echo htmlspecialchars($fila["monto"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar monto">✏️</button></td>
+                            <td><input type="number" step="0.01" min="0.01" max="99999999" required data-campo="monto" data-error="El monto debe ser un número mayor que 0 (máximo dos decimales)." value="<?php echo htmlspecialchars($fila["monto"]); ?>" readonly><button type="button" class="edit-btn" aria-label="Editar monto">✏️</button></td>
                             <td>
                                 <div class="estado-celda">
                                     <span class="invoice-status <?php echo $clase; ?>"><span aria-hidden="true"><?php echo $icono; ?></span> <?php echo htmlspecialchars(strtoupper($estado)); ?></span>
@@ -187,21 +195,22 @@ $stmt->close();
         </section>
     </main>
 
+    <!-- Tarea 12: formulario para agregar (lo abre el botón "+ Nuevo"); el JS lo valida antes de enviar -->
     <dialog id="dlgNuevo">
         <form id="formNuevo" method="dialog">
             <h3>Nueva factura</h3>
-            <select name="id_estudiante" required>
+            <select name="id_estudiante" required data-error="Elige un estudiante.">
                 <option value="" selected disabled>Estudiante</option>
                 <?php foreach($estudiantes as $est){ ?>
                 <option value="<?php echo (int)$est["id_estudiante"]; ?>"><?php echo htmlspecialchars($est["nombre"] . " " . $est["apellido"]); ?></option>
                 <?php } ?>
             </select>
-            <input name="descripcion" placeholder="Descripción (ej. Mensualidad noviembre)" maxlength="255" required>
+            <input name="descripcion" placeholder="Descripción (ej. Mensualidad noviembre)" maxlength="255" required data-error="Escribe una descripción (máximo 255 caracteres).">
             <label for="fac-emision">Fecha de emisión</label>
-            <input name="fecha_emision" id="fac-emision" type="date" value="<?php echo date("Y-m-d"); ?>" required>
+            <input name="fecha_emision" id="fac-emision" type="date" value="<?php echo date("Y-m-d"); ?>" required data-error="Elige la fecha de emisión.">
             <label for="fac-vencimiento">Fecha de vencimiento</label>
             <input name="fecha_vencimiento" id="fac-vencimiento" type="date">
-            <input name="monto" type="number" step="0.01" min="0.01" placeholder="Monto ($)" required>
+            <input name="monto" type="number" step="0.01" min="0.01" max="99999999" placeholder="Monto ($)" required data-error="El monto debe ser un número mayor que 0 (máximo dos decimales).">
             <select name="estado_pago" required>
                 <?php foreach($estados as $opcion){ ?>
                 <option value="<?php echo $opcion; ?>"><?php echo ucfirst($opcion); ?></option>
@@ -224,6 +233,7 @@ $stmt->close();
         <h2>X: @GRUT_updates</h2>
     </footer>
 
+    <!-- Tarea 12: JavaScript que valida y envía los cambios al PHP de esta misma página -->
     <script src="scripts/admin_crud.js"></script>
 </body>
 </html>

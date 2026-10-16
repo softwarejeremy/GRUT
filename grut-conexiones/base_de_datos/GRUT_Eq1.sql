@@ -1,3 +1,21 @@
+-- =====================================================================
+-- GRUT - base de datos "transito_escolar"
+-- Estructura (tablas, claves primarias y foráneas) + datos de prueba.
+--
+-- Datos de prueba: todas las cuentas tienen la contraseña  Grut2026
+--   Administrador: admin@grut.com
+--   Conductores:   juan.perez@grut.com, maria.campos@grut.com, jose.aguilar@grut.com
+--   Estudiantes:   ana.martinez@correo.com, luis.hernandez@correo.com,
+--                  sofia.ramirez@correo.com, diego.flores@correo.com,
+--                  valeria.rivas@correo.com, carlos.mejia@correo.com
+--   (carlos.mejia no tiene rutas: sirve para ver el mensaje "Aún no tienes rutas asignadas")
+--
+-- OJO: la primera línea BORRA la base si ya existe, para poder importar de nuevo.
+-- Los usuarios que hayas registrado a mano en tu XAMPP se pierden.
+-- =====================================================================
+SET NAMES utf8mb4;
+DROP DATABASE IF EXISTS transito_escolar;
+
 CREATE DATABASE IF NOT EXISTS transito_escolar
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
@@ -29,16 +47,16 @@ CREATE TABLE usuario (
 );
 
 INSERT INTO usuario (nombre, apellido, correo, telefono, contrasena) VALUES
-('Maria', 'Gonzalez', 'maria.gonzalez@correo.com', '88451234', 'hashed_pw_1'),
-('Carlos', 'Ramirez', 'carlos.ramirez@correo.com', '88451235', 'hashed_pw_2'),
-('Ana', 'Fernandez', 'ana.fernandez@correo.com', '88451236', 'hashed_pw_3'),
-('Jose', 'Mora', 'jose.mora@correo.com', '88451237', 'hashed_pw_4'),
-('Laura', 'Jimenez', 'laura.jimenez@correo.com', '88451238', 'hashed_pw_5'),
-('Pedro', 'Vargas', 'pedro.vargas@correo.com', '88451239', 'hashed_pw_6'),
-('Sofia', 'Castro', 'sofia.castro@correo.com', '88451240', 'hashed_pw_7'),
-('Diego', 'Solano', 'diego.solano@correo.com', '88451241', 'hashed_pw_8'),
-('Valeria', 'Rojas', 'valeria.rojas@correo.com', '88451242', 'hashed_pw_9'),
-('Andres', 'Chacon', 'andres.chacon@correo.com', '88451243', 'hashed_pw_10');
+('Carmen', 'López', 'admin@grut.com', '2250-1000', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi'),
+('Juan', 'Pérez', 'juan.perez@grut.com', '7012-3456', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi'),
+('María', 'Campos', 'maria.campos@grut.com', '7123-4567', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi'),
+('José', 'Aguilar', 'jose.aguilar@grut.com', '7234-5678', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi'),
+('Ana', 'Martínez', 'ana.martinez@correo.com', '7345-6789', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi'),
+('Luis', 'Hernández', 'luis.hernandez@correo.com', '7456-7890', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi'),
+('Sofía', 'Ramírez', 'sofia.ramirez@correo.com', '6012-3456', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi'),
+('Diego', 'Flores', 'diego.flores@correo.com', '6123-4567', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi'),
+('Valeria', 'Rivas', 'valeria.rivas@correo.com', '7567-8901', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi'),
+('Carlos', 'Mejía', 'carlos.mejia@correo.com', '7678-9012', '$2y$10$MoZmHFnKiIS7o0pemZludOPXTSHzivq6Vq5MY7Vb9B1WEipYE7TVi');
 
 CREATE TABLE buses (
   id_bus     INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -49,16 +67,11 @@ CREATE TABLE buses (
 );
 
 INSERT INTO buses (placa, capacidad, estado) VALUES
-('SJB-001', 40, 'activo'),
-('SJB-002', 35, 'activo'),
-('SJB-003', 42, 'mantenimiento'),
-('SJB-004', 30, 'activo'),
-('SJB-005', 45, 'activo'),
-('SJB-006', 38, 'inactivo'),
-('SJB-007', 40, 'activo'),
-('SJB-008', 32, 'activo'),
-('SJB-009', 36, 'mantenimiento'),
-('SJB-010', 44, 'activo');
+('AB-101-234', 40, 'activo'),
+('AB-102-345', 35, 'activo'),
+('AB-103-456', 42, 'activo'),
+('AB-104-567', 30, 'mantenimiento'),
+('AB-105-678', 45, 'inactivo');
 
 CREATE TABLE paradas (
   id_parada  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -69,16 +82,16 @@ CREATE TABLE paradas (
 );
 
 INSERT INTO paradas (nombre, direccion, latitud, longitud) VALUES
-('Parada Central', 'Av. Central, San Jose', 9.9325000, -84.0795600),
-('Parada Norte', 'Barrio Norte, San Jose', 9.9450000, -84.0700000),
-('Parada Sur', 'Barrio Sur, San Jose', 9.9200000, -84.0850000),
-('Parada Escuela Roble', 'Calle Roble', 9.9300000, -84.0600000),
-('Parada Plaza Mayor', 'Plaza Mayor', 9.9350000, -84.0900000),
-('Parada Rio Frio', 'Sector Rio Frio', 9.9100000, -84.0750000),
-('Parada Los Angeles', 'Barrio Los Angeles', 9.9500000, -84.0650000),
-('Parada El Carmen', 'Barrio El Carmen', 9.9280000, -84.0820000),
-('Parada Santa Lucia', 'Sector Santa Lucia', 9.9400000, -84.0780000),
-('Parada Vista Hermosa', 'Barrio Vista Hermosa', 9.9150000, -84.0680000);
+('Metrocentro', 'Boulevard de Los Héroes, San Salvador', 13.7058000, -89.2124000),
+('Redondel Masferrer', 'Colonia Escalón, San Salvador', 13.7096000, -89.2393000),
+('Plaza Las Américas', 'Colonia Flor Blanca, San Salvador', 13.6990000, -89.2235000),
+('Universidad Tecnológica (UTEC)', 'Calle Arce, San Salvador', 13.7003000, -89.1983000),
+('Colegio Bautista', 'Alameda Juan Pablo II, San Salvador', 13.7072000, -89.2010000),
+('Colegio San Patricio', 'Colonia San Benito, San Salvador', 13.6955000, -89.2405000),
+('Universidad Don Bosco', 'Calle a Plan del Pino, Soyapango', 13.7150000, -89.1530000),
+('Centro Comercial Plaza Mundo', 'Boulevard del Ejército, Soyapango', 13.7005000, -89.1490000),
+('Centro Escolar Cantón Dolores Apulo', 'Cantón Dolores Apulo, Ilopango', 13.6760000, -89.0630000),
+('Parque Central de Ilopango', 'Centro de Ilopango', 13.7016000, -89.1094000);
 
 CREATE TABLE estudiante (
   id_estudiante     INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -89,16 +102,12 @@ CREATE TABLE estudiante (
 );
 
 INSERT INTO estudiante (id_usuario, curso_educacion, centro_educativo) VALUES
-(1, '5to grado', 'Escuela Central'),
-(1, '3ro grado', 'Escuela Central'),
-(2, '6to grado', 'Escuela San Rafael'),
-(2, '4to grado', 'Escuela San Rafael'),
-(3, '2do grado', 'Escuela Roble'),
-(3, '1ro grado', 'Escuela Roble'),
-(4, '7mo grado', 'Colegio Vista Hermosa'),
-(5, '8vo grado', 'Colegio Vista Hermosa'),
-(6, '5to grado', 'Escuela Santa Lucia'),
-(7, '3ro grado', 'Escuela Santa Lucia');
+(5, 'Universitario', 'Universidad Tecnológica de El Salvador'),
+(6, 'Bachillerato', 'Colegio Bautista'),
+(7, 'Secundaria', 'Colegio San Patricio'),
+(8, 'Universitario', 'Universidad Don Bosco'),
+(9, 'Primaria', 'Centro Escolar Cantón Dolores Apulo'),
+(10, 'Bachillerato', 'Colegio San Patricio');
 
 CREATE TABLE conductor (
   id_conductor  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -110,16 +119,9 @@ CREATE TABLE conductor (
 );
 
 INSERT INTO conductor (id_usuario, licencia) VALUES
-(1, 'LIC-0001'),
-(2, 'LIC-0002'),
-(3, 'LIC-0003'),
-(4, 'LIC-0004'),
-(5, 'LIC-0005'),
-(6, 'LIC-0006'),
-(7, 'LIC-0007'),
-(8, 'LIC-0008'),
-(9, 'LIC-0009'),
-(10, 'LIC-0010');
+(2, '0614-150385-101-1'),
+(3, '0614-220790-102-5'),
+(4, '0511-030588-103-2');
 
 CREATE TABLE usuario_rol (
   id_usuario        INT UNSIGNED NOT NULL,
@@ -131,16 +133,16 @@ CREATE TABLE usuario_rol (
 );
 
 INSERT INTO usuario_rol (id_usuario, id_roles, fecha_asignacion) VALUES
-(1, 1, '2025-01-10 08:00:00'),
-(2, 4, '2025-01-10 08:05:00'),
-(3, 4, '2025-01-11 08:00:00'),
-(4, 3, '2025-01-11 08:05:00'),
-(5, 4, '2025-01-12 08:00:00'),
-(6, 4, '2025-01-12 08:05:00'),
-(7, 4, '2025-01-13 08:00:00'),
-(8, 4, '2025-01-13 08:05:00'),
-(9, 4, '2025-01-14 08:00:00'),
-(10, 4, '2025-01-14 08:05:00');
+(1, 1, '2026-01-10 08:00:00'),
+(2, 4, '2026-01-10 08:05:00'),
+(3, 4, '2026-01-10 08:10:00'),
+(4, 4, '2026-01-10 08:15:00'),
+(5, 3, '2026-01-12 09:00:00'),
+(6, 3, '2026-01-12 09:05:00'),
+(7, 3, '2026-01-12 09:10:00'),
+(8, 3, '2026-01-12 09:15:00'),
+(9, 3, '2026-01-12 09:20:00'),
+(10, 3, '2026-01-12 09:25:00');
 
 CREATE TABLE rutas (
   id_ruta       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -151,16 +153,10 @@ CREATE TABLE rutas (
 );
 
 INSERT INTO rutas (nombre, descripcion, id_conductor) VALUES
-('Ruta Norte', 'Recorrido zona norte', 1),
-('Ruta Sur', 'Recorrido zona sur', 2),
-('Ruta Central', 'Recorrido zona central', 3),
-('Ruta Este', 'Recorrido zona este', 4),
-('Ruta Oeste', 'Recorrido zona oeste', 5),
-('Ruta Roble', 'Recorrido barrio Roble', 6),
-('Ruta Vista Hermosa', 'Recorrido Vista Hermosa', 7),
-('Ruta Santa Lucia', 'Recorrido Santa Lucia', 8),
-('Ruta El Carmen', 'Recorrido El Carmen', 9),
-('Ruta Rio Frio', 'Recorrido Rio Frio', 10);
+('Ruta 15', 'Escalón - San Benito - Centro de San Salvador', 1),
+('Ruta 41-A', 'Metrocentro - Colegio Bautista - UTEC', 2),
+('Ruta 41-D', 'Soyapango - Ilopango', 3),
+('Ruta 29', 'Ruta nueva, todavía sin conductor', NULL);
 
 CREATE TABLE ruta_bus (
   id_ruta  INT UNSIGNED NOT NULL,
@@ -173,14 +169,7 @@ CREATE TABLE ruta_bus (
 INSERT INTO ruta_bus (id_ruta, id_bus) VALUES
 (1, 1),
 (2, 2),
-(3, 3),
-(4, 4),
-(5, 5),
-(6, 6),
-(7, 7),
-(8, 8),
-(9, 9),
-(10, 10);
+(3, 3);
 
 CREATE TABLE estudiante_ruta (
   id_estudiante_ruta  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -192,16 +181,12 @@ CREATE TABLE estudiante_ruta (
 );
 
 INSERT INTO estudiante_ruta (id_estudiante, id_ruta) VALUES
-(1, 1),
-(2, 1),
-(3, 2),
-(4, 2),
+(1, 2),
+(2, 2),
+(3, 1),
+(4, 3),
 (5, 3),
-(6, 3),
-(7, 4),
-(8, 5),
-(9, 6),
-(10, 7);
+(1, 1);
 
 CREATE TABLE ruta_parada (
   id_ruta_parada  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -214,16 +199,16 @@ CREATE TABLE ruta_parada (
 );
 
 INSERT INTO ruta_parada (id_ruta, id_parada, orden) VALUES
-(1, 1, 1),
-(2, 2, 1),
-(3, 3, 1),
-(4, 4, 1),
-(5, 5, 1),
-(6, 6, 1),
-(7, 7, 1),
-(8, 8, 1),
-(9, 9, 1),
-(10, 10, 1);
+(1, 2, 1),
+(1, 6, 2),
+(1, 3, 3),
+(2, 1, 1),
+(2, 5, 2),
+(2, 4, 3),
+(3, 8, 1),
+(3, 7, 2),
+(3, 10, 3),
+(3, 9, 4);
 
 CREATE TABLE horarios (
   id_horario      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -235,16 +220,24 @@ CREATE TABLE horarios (
 );
 
 INSERT INTO horarios (id_ruta_parada, dia_semana, hora_salida, hora_llegada) VALUES
-(1, 'lunes', '06:00:00', '06:45:00'),
-(2, 'martes', '06:10:00', '06:55:00'),
-(3, 'miercoles', '06:05:00', '06:50:00'),
-(4, 'jueves', '06:15:00', '07:00:00'),
-(5, 'viernes', '06:20:00', '07:05:00'),
-(6, 'lunes', '06:25:00', '07:10:00'),
-(7, 'martes', '06:30:00', '07:15:00'),
-(8, 'miercoles', '06:35:00', '07:20:00'),
-(9, 'jueves', '06:40:00', '07:25:00'),
-(10, 'viernes', '06:45:00', '07:30:00');
+(1, 'lunes', '06:00:00', '06:05:00'),
+(1, 'miercoles', '06:00:00', '06:05:00'),
+(1, 'viernes', '06:00:00', '06:05:00'),
+(2, 'lunes', '06:20:00', '06:25:00'),
+(2, 'miercoles', '06:20:00', '06:25:00'),
+(2, 'viernes', '06:20:00', '06:25:00'),
+(3, 'lunes', '06:40:00', '06:45:00'),
+(4, 'lunes', '06:15:00', '06:20:00'),
+(4, 'martes', '06:15:00', '06:20:00'),
+(4, 'jueves', '06:15:00', '06:20:00'),
+(5, 'lunes', '06:35:00', '06:40:00'),
+(5, 'martes', '06:35:00', '06:40:00'),
+(6, 'lunes', '06:55:00', '07:00:00'),
+(7, 'lunes', '05:45:00', '05:50:00'),
+(7, 'jueves', '05:45:00', '05:50:00'),
+(8, 'lunes', '06:05:00', '06:10:00'),
+(9, 'lunes', '06:25:00', '06:30:00'),
+(10, 'lunes', '06:45:00', '06:50:00');
 
 CREATE TABLE facturas (
   id_factura         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -259,13 +252,11 @@ CREATE TABLE facturas (
 );
 
 INSERT INTO facturas (id_estudiante, fecha_emision, fecha_vencimiento, monto, estado_pago, metodo_pago, descripcion) VALUES
-(1, '2025-01-01', '2025-01-15', 25000.00, 'pagado', 'transferencia', 'Mensualidad enero'),
-(2, '2025-01-01', '2025-01-15', 25000.00, 'pendiente', 'efectivo', 'Mensualidad enero'),
-(3, '2025-01-01', '2025-01-15', 25000.00, 'pagado', 'tarjeta', 'Mensualidad enero'),
-(4, '2025-01-01', '2025-01-15', 25000.00, 'vencido', 'efectivo', 'Mensualidad enero'),
-(5, '2025-02-01', '2025-02-15', 25000.00, 'pagado', 'transferencia', 'Mensualidad febrero'),
-(6, '2025-02-01', '2025-02-15', 25000.00, 'pendiente', 'efectivo', 'Mensualidad febrero'),
-(7, '2025-02-01', '2025-02-15', 25000.00, 'pagado', 'tarjeta', 'Mensualidad febrero'),
-(8, '2025-02-01', '2025-02-15', 25000.00, 'pagado', 'transferencia', 'Mensualidad febrero'),
-(9, '2025-03-01', '2025-03-15', 25000.00, 'pendiente', 'efectivo', 'Mensualidad marzo'),
-(10, '2025-03-01', '2025-03-15', 25000.00, 'pagado', 'tarjeta', 'Mensualidad marzo');
+(1, '2026-08-01', '2026-08-15', 25.00, 'pagado', 'transferencia', 'Mensualidad agosto'),
+(1, '2026-09-01', '2026-09-15', 25.00, 'pagado', 'tarjeta', 'Mensualidad septiembre'),
+(1, '2026-10-01', '2026-10-15', 25.00, 'pendiente', NULL, 'Mensualidad octubre'),
+(2, '2026-09-01', '2026-09-15', 25.00, 'vencido', NULL, 'Mensualidad septiembre'),
+(2, '2026-10-01', '2026-10-15', 25.00, 'pendiente', NULL, 'Mensualidad octubre'),
+(3, '2026-10-01', '2026-10-15', 25.00, 'pagado', 'efectivo', 'Mensualidad octubre'),
+(4, '2026-10-01', '2026-10-15', 25.00, 'pendiente', NULL, 'Mensualidad octubre'),
+(5, '2026-10-01', '2026-10-15', 25.00, 'pagado', 'transferencia', 'Mensualidad octubre');

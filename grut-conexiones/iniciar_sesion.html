@@ -20,6 +20,7 @@
                     <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                     <li><a class="btn" href="soporte.html">Soporte</a></li>
                     <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                    <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                     <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
                 </ul>
             </nav>
@@ -32,6 +33,7 @@
             <div class="contenido-login">
                 <div class="columna-credenciales">
                     <h2>Credenciales</h2>
+                    <!-- Tareas 3 y 4: scripts/validacion_login.js valida y envía; php/iniciar_sesion.php responde en JSON -->
                     <form id="login" method="POST" action="php/iniciar_sesion.php" aria-label="Formulario de inicio de sesión">
                         <label for="email_user">Correo electrónico</label>
                         <input type="email" id="email_user" name="email" autocomplete="email" aria-label="Correo electrónico" placeholder="ejemplo@gmail.com" required>
@@ -39,6 +41,7 @@
                         <input type="password" id="passwd" name="password" autocomplete="current-password" aria-label="Contraseña" placeholder="Ingresa tu contraseña (mínimo 6 caracteres)" required>
                         <a href="registro.html" class="enlace-registro">¿No tienes una cuenta?<br>Crea una aquí &rarr;</a>
                         <button type="submit">Iniciar sesión</button>
+                        <!-- Tarea 3 (Gustavo): aquí aparece el mensaje de error o de éxito -->
                         <p id="mensajeError" aria-live="polite"></p>
                     </form>
                 </div>

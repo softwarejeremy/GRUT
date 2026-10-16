@@ -1,4 +1,6 @@
 <?php
+// Tarea 6 (Asael): detalle de una ruta (ruta.php?id=...), con sus paradas en orden y horarios.
+// Se llega desde "Ver detalles..." en inicio_estudiante.php (tarea 5).
 require_once("php/verificar_sesion.php");
 require_once("php/conexion.php");
 if($_SESSION["rol"] != "Estudiante"){
@@ -98,6 +100,7 @@ function formato_hora($hora){
                 <li><a class="btn" href="como_funciona.html">Cómo funciona</a></li>
                 <li><a class="btn" href="soporte.html">Soporte</a></li>
                 <li><a class="btn" href="configuracion.html">Configuración</a></li>
+                <!-- Tarea 14 (Andrea): "Cuenta" lleva al inicio de sesión -->
                 <li><a class="btn" href="iniciar_sesion.html">Cuenta</a></li>
             </ul>
         </nav>

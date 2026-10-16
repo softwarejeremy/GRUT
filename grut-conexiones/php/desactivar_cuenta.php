@@ -1,5 +1,5 @@
 <?php
-// TAREA 13: desactiva la cuenta del usuario con sesión iniciada.
+// Tarea 13 (Andrea): desactiva la cuenta del usuario con sesión iniciada.
 // Ubicación: php/desactivar_cuenta.php (junto a conexion.php)
 
 session_start();

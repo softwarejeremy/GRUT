@@ -1,4 +1,11 @@
 <?php
+// =====================================================================
+// Inicio de sesión. Recibe el formulario de iniciar_sesion.html por fetch
+// (scripts/validacion_login.js) y responde en JSON.
+//   Tarea 3  (Gustavo): los errores vuelven en JSON y se muestran en el formulario.
+//   Tarea 4  (Jeremy):  cada rol va a su panel; los roles sin panel no inician sesión.
+//   Tarea 13 (Andrea):  se rechazan las cuentas desactivadas (columna activo).
+// =====================================================================
 ob_start();
 ini_set('display_errors', '0');
 header('Content-Type: application/json; charset=utf-8');
@@ -14,6 +21,7 @@ try {
 
     require_once __DIR__ . "/conexion.php";
 
+    // ---------- Tarea 3: validar el correo y buscar al usuario con su rol ----------
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
 
@@ -62,6 +70,8 @@ try {
         exit;
     }
 
+    // ---------- Tarea 4: crear la sesión y elegir el panel según el rol ----------
+    // session_regenerate_id cambia el id de la sesión al entrar (evita robo de sesión)
     session_regenerate_id(true);
     $_SESSION["id_usuario"] = $user["id_usuario"];
     $_SESSION["nombre"] = $user["nombre"];

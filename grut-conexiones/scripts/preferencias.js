@@ -1,3 +1,4 @@
+// Tarea 13 (Andrea): preferencias de configuracion.html.
 // Aplica las preferencias guardadas (tamaño de texto y modo de color).
 // Debe incluirse en el <head> de TODAS las páginas, SIN defer,
 // para evitar el parpadeo de claro a oscuro al cargar.

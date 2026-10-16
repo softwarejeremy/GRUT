@@ -1,3 +1,18 @@
+/* =====================================================================
+   GRUT - estilos de todo el sitio
+   Cómo está ordenado este archivo:
+     1. @layer pages: un bloque @scope (body.page-...) por página. Cada página
+        tiene en su <body> la clase que la identifica (ej. class="page-buses").
+     2. @layer common: estilos que comparten todas las páginas.
+     3. Al final, SIN capa (les ganan a las capas), los añadidos por tareas:
+          Tarea 3  (Gustavo) mensaje de error/éxito del login y el registro
+          Tarea 12 (Bryan)   agregar, editar y borrar en las páginas del administrador
+          Tareas 8 y 9       mensajes al guardar el perfil (estudiante y conductor)
+          Tarea 5  (Gustavo) mensaje "Aún no tienes rutas asignadas"
+          Tarea 12 (Bryan)   facturas
+   La tarea 1 (Jeremy, botón "Cerrar sesión") está dentro de @scope (body.page-configuracion).
+   Las preferencias de la tarea 13 (Andrea) están en css/preferencias.css.
+   ===================================================================== */
 @layer pages, common;
 @layer pages {
   @scope (body.page-buses) {
@@ -834,6 +849,7 @@ footer {
   flex-wrap: wrap;
 }
 
+/* Tarea 1 (Jeremy): el enlace "Cerrar sesión" (.log_out) se ve igual que los botones */
 .action-buttons button, .log_out {
   cursor: pointer;
   padding: 9px 14px;
@@ -5246,6 +5262,8 @@ footer h2,
 
 }
 
+/* ==== Tarea 3 (Gustavo): aviso de error o éxito en iniciar_sesion.html y registro.html ====
+   scripts/validacion_login.js y validacion_registro.js le ponen la clase "mostrar" (y "exito"). */
 #mensajeError {
     position: fixed;
     top: 20px;
@@ -5276,7 +5294,7 @@ footer h2,
 }
 
 
-/* ==== Tarea 12: agregar, editar y borrar en las páginas del administrador ==== */
+/* ==== Tarea 12 (Bryan): agregar, editar y borrar en las páginas del administrador ==== */
 /* (estilos de Bryan para conductor_administrador.php, ahora para las 6 páginas) */
 :is(body.page-buses, body.page-conductores, body.page-estudiantes,
     body.page-facturas, body.page-paradas, body.page-rutas) .data-table input[readonly] {
@@ -5344,31 +5362,36 @@ body.modo-borrar .col-borrar {
   background: #b3261e;
 }
 
-:is(#dlgNuevo, #dlgRecorrido, #dlgFactura) {
+/* Campo que no pasó la validación de JavaScript (scripts/admin_crud.js) */
+dialog [aria-invalid] {
+  outline: 2px solid #b3261e;
+}
+
+:is(#dlgNuevo, #dlgRecorrido, #dlgFactura, #dlgInscripcion) {
   margin: auto;
   padding: 1.25rem;
   border: 2px solid #14283d;
   border-radius: 12px;
 }
 
-:is(#dlgNuevo, #dlgRecorrido, #dlgFactura)::backdrop {
+:is(#dlgNuevo, #dlgRecorrido, #dlgFactura, #dlgInscripcion)::backdrop {
   background: #14283d80;
 }
 
-:is(#dlgNuevo, #dlgRecorrido, #dlgFactura) form {
+:is(#dlgNuevo, #dlgRecorrido, #dlgFactura, #dlgInscripcion) form {
   display: grid;
   gap: 0.6rem;
   min-width: 280px;
   max-width: calc(100vw - 48px);
 }
 
-:is(#dlgNuevo, #dlgRecorrido, #dlgFactura) label {
+:is(#dlgNuevo, #dlgRecorrido, #dlgFactura, #dlgInscripcion) label {
   font-size: 13px;
   font-weight: 600;
 }
 
-:is(#dlgNuevo, #dlgRecorrido, #dlgFactura) input,
-:is(#dlgNuevo, #dlgRecorrido, #dlgFactura) select {
+:is(#dlgNuevo, #dlgRecorrido, #dlgFactura, #dlgInscripcion) input,
+:is(#dlgNuevo, #dlgRecorrido, #dlgFactura, #dlgInscripcion) select {
   width: 100%;
   padding: 0.65rem 0.75rem;
   border: 1px solid var(--grut-border);
@@ -5376,7 +5399,7 @@ body.modo-borrar .col-borrar {
   font-family: inherit;
 }
 
-:is(#dlgNuevo, #dlgRecorrido, #dlgFactura) button {
+:is(#dlgNuevo, #dlgRecorrido, #dlgFactura, #dlgInscripcion) button {
   padding: 0.55rem 0.85rem;
   border: 0;
   border-radius: 6px;
@@ -5385,38 +5408,79 @@ body.modo-borrar .col-borrar {
   cursor: pointer;
 }
 
-:is(#dlgNuevo, #dlgRecorrido, #dlgFactura) button:hover {
+:is(#dlgNuevo, #dlgRecorrido, #dlgFactura, #dlgInscripcion) button:hover {
   background: var(--grut-dark);
 }
 
-:is(#dlgNuevo, #dlgRecorrido, #dlgFactura) menu {
+:is(#dlgNuevo, #dlgRecorrido, #dlgFactura, #dlgInscripcion) menu {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
   padding: 0;
 }
 
-/* ==== Tarea 9: mensaje al guardar el perfil del conductor ==== */
-body.page-cuenta-conductor .mensaje-exito,
-body.page-cuenta-conductor .mensaje-error {
+/* ==== Tareas 8 y 9: mensajes al guardar el perfil (estudiante y conductor) ==== */
+:is(body.page-inicio-estudiante, body.page-cuenta-conductor) .mensaje-exito,
+:is(body.page-inicio-estudiante, body.page-cuenta-conductor) .mensaje-error {
   padding: 12px 16px;
   border-radius: 8px;
   margin: 0 0 16px;
   font-weight: bold;
 }
 
-body.page-cuenta-conductor .mensaje-exito {
+:is(body.page-inicio-estudiante, body.page-cuenta-conductor) .mensaje-exito {
   background: #d4edda;
   color: #155724;
 }
 
-body.page-cuenta-conductor .mensaje-error {
+:is(body.page-inicio-estudiante, body.page-cuenta-conductor) .mensaje-error {
   background: #f8d7da;
   color: #721c24;
 }
 
+:is(body.page-inicio-estudiante, body.page-cuenta-conductor) [hidden] {
+  display: none;
+}
 
-/* ==== Tarea 12: facturas (botones y campos editables sobre la tabla de Fabiola) ==== */
+:is(body.page-inicio-estudiante, body.page-cuenta-conductor) input[aria-invalid="true"] {
+  outline: 2px solid #c0392b;
+}
+
+/* Botón "Editar información" / "Guardar cambios" (es un <button>, con el mismo aspecto que a.btn) */
+:is(body.page-inicio-estudiante, body.page-cuenta-conductor) button.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 2px solid var(--grut-blue);
+  border-radius: 6px;
+  background: var(--grut-blue);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+:is(body.page-inicio-estudiante, body.page-cuenta-conductor) button.btn:hover {
+  background: #ffffff;
+  color: var(--grut-blue);
+}
+
+/* ==== Tarea 5 (Gustavo): mensaje cuando el estudiante no tiene rutas ==== */
+body.page-inicio-estudiante .sin-rutas {
+  margin: 0;
+  font-size: 15px;
+  color: #333333;
+}
+
+
+/* Páginas con dos tablas (rutas: inscripciones; paradas: recorridos): separar los dos paneles */
+:is(body.page-rutas, body.page-paradas) .panel + .panel {
+  margin-top: 26px;
+}
+
+/* ==== Tarea 12 (Bryan): facturas (botones y campos editables sobre la tabla de Fabiola) ==== */
 body.page-facturas .panel-actions {
   display: flex;
   gap: 12px;
@@ -5514,4 +5578,46 @@ body.page-facturas .invoice-status {
 
 body.page-facturas .btn-accion {
   white-space: normal;
+}
+
+/* ==== Diseño adaptable (rúbrica 2.2): páginas públicas en el celular ====
+   En inicio.html las secciones usan columnas fijas (grid-column: 1..4) que en pantallas
+   pequeñas crean columnas de más y la página se sale por la derecha. Aquí pasan a una columna.
+   En como_funciona.html y soporte.html las tarjetas miden 300px + 50px de margen a cada lado. */
+@media (max-width: 800px) {
+  body.page-inicio main > section:is(:nth-of-type(2), :nth-of-type(3), :nth-of-type(4)) {
+    grid-template-columns: 1fr;
+  }
+
+  body.page-inicio main > section:is(:nth-of-type(2), :nth-of-type(3), :nth-of-type(4)) > * {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  /* Pasos de "¿Cómo funciona?": el título (h3) y su texto (p) quedan juntos como una tarjeta */
+  body.page-inicio main > section:nth-of-type(2) {
+    row-gap: 0;
+  }
+
+  body.page-inicio main > section:nth-of-type(2) > p {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  body.page-como-funciona main > section:first-of-type .guia,
+  body.page-soporte main > section:first-of-type .medio {
+    display: block;
+    width: auto;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body.page-como-funciona main > section:first-of-type .guia img,
+  body.page-soporte main > section:first-of-type .medio img,
+  body.page-como-funciona main > section:first-of-type .guia button,
+  body.page-soporte main > section:first-of-type .medio button {
+    max-width: 100%;
+  }
 }

@@ -1,5 +1,7 @@
-// Lógica de la página configuracion.html (TAREA 13)
-// El botón "Cerrar sesión" NO se toca aquí (lo maneja la tarea 1).
+// Tarea 13 (Andrea): lógica de la página configuracion.html
+//   - tamaño de texto y modo claro/oscuro (se guardan en localStorage)
+//   - pedir confirmación antes de desactivar la cuenta (php/desactivar_cuenta.php)
+// El botón "Cerrar sesión" NO se toca aquí: es un enlace a php/cerrar_sesion.php (tarea 1, Jeremy).
 document.addEventListener("DOMContentLoaded", function () {
     var raiz = document.documentElement;
 
